@@ -29,8 +29,8 @@
                 </div>
                 <div class="col-md-6">
                     <h5>Informasi Cuti</h5>
-                    <p><strong>Tanggal Mulai:</strong> {{ $cuti->tanggal_mulai }}</p>
-                    <p><strong>Tanggal Selesai:</strong> {{ $cuti->tanggal_selesai }}</p>
+                    <p><strong>Tanggal Mulai:</strong> {{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y') }}</p>
+                    <p><strong>Tanggal Selesai:</strong> {{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y') }}</p>
                     <p><strong>Jumlah Hari:</strong> {{ $cuti->jumlah_hari }} hari</p>
                     <p><strong>Status:</strong> 
                         <span class="badge bg-{{ $cuti->status === 'pending' ? 'warning' : ($cuti->status === 'approved' ? 'success' : 'danger') }}">

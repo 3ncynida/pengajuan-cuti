@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuti;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class CutiController extends Controller
 {
     public function create()
     {
-        return view('cuti.create');
+        return view('karyawan.cuti.create');
     }
 
     public function store(Request $request)
@@ -53,6 +54,31 @@ class CutiController extends Controller
         abort(403);
     }
 
-    return view('cuti.show', compact('cuti'));
+    return view('karyawan.cuti.show', compact('cuti'));
+}
+public function destroy(Cuti $cuti)
+{
+    try {
+        // Check if the cuti belongs to the authenticated user
+        if ($cuti->karyawan_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Only allow deletion of pending requests
+        if ($cuti->status !== 'pending') {
+            return response()->json(['error' => 'Tidak dapat menghapus pengajuan yang sudah diproses'], 403);
+        }
+
+        // Delete the supporting document if exists
+        if ($cuti->dokumen_pendukung) {
+            Storage::delete('public/dokumen_pendukung/' . $cuti->dokumen_pendukung);
+        }
+
+        $cuti->delete();
+        
+        return response()->json(['message' => 'Pengajuan cuti berhasil dihapus']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Terjadi kesalahan saat menghapus pengajuan cuti'], 500);
+    }
 }
 }

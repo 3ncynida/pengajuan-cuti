@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Detail Pengajuan Cuti</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .detail-container {
@@ -80,13 +81,47 @@
             </div>
 
             <div class="mt-4">
-                <a href="{{ route('karyawan.dashboard') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
-                </a>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('karyawan.dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                    </a>
+                    
+                    @if($cuti->status === 'pending')
+                        <button type="button" 
+                                class="btn btn-danger" 
+                                onclick="deleteCuti({{ $cuti->id }})">
+                            <i class="fas fa-trash"></i> Hapus Pengajuan
+                        </button>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function deleteCuti(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')) {
+                fetch(`/cuti/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '{{ route("karyawan.dashboard") }}';
+                    } else {
+                        response.json().then(data => {
+                            alert(data.error || 'Terjadi kesalahan saat menghapus pengajuan cuti.');
+                        });
+                    }
+                }).catch(error => {
+                    alert('Terjadi kesalahan saat menghapus pengajuan cuti.');
+                    console.error('Error:', error);
+                });
+            }
+        }
+        </script>
 </body>
 </html>
