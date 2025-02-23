@@ -15,6 +15,46 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             margin-top: 20px;
         }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+        .stat-pending { border-left-color: #ffc107; }
+        .stat-approved { border-left-color: #198754; }
+        .stat-rejected { border-left-color: #dc3545; }
+        .stat-total { border-left-color: #0d6efd; }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .stat-label {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .info-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #0d6efd;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .info-value {
+        font-size: 1.1rem;
+        color: #212529;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
     </style>
 </head>
 <body>
@@ -40,37 +80,85 @@
                 </div>
                 @endif
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="border-bottom pb-2">Informasi Karyawan</h5>
-                    <dl class="row">
-                        <dt class="col-sm-4">Nama</dt>
-                        <dd class="col-sm-8">{{ $karyawan->nama_karyawan ?? 'Belum diisi' }}</dd>
-
-                        <dt class="col-sm-4">Email</dt>
-                        <dd class="col-sm-8">{{ $karyawan->email }}</dd>
-
-                        <dt class="col-sm-4">Jabatan</dt>
-                        <dd class="col-sm-8">{{ $karyawan->jabatan->nama_jabatan ?? 'Belum diset' }}</dd>
-
-                        <dt class="col-sm-4">Status</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge {{ $karyawan->is_verified ? 'bg-success' : 'bg-danger' }}">
-                                {{ $karyawan->is_verified ? 'Verified' : 'Unverified' }}
-                            </span>
-                        </dd>
-
-                        <dt class="col-sm-4">Role</dt>
-                        <dd class="col-sm-8">
-                            <span class="badge bg-{{ $karyawan->role === 'admin' ? 'danger' : 'info' }}">
-                                {{ ucfirst($karyawan->role) }}
-                            </span>
-                        </dd>
-                    </dl>
+    
+            <!-- Employee Information Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="border-bottom pb-2 mb-4">Informasi Karyawan</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">Nama Lengkap</div>
+                                <div class="info-value">{{ $karyawan->nama_karyawan ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ $karyawan->email }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">Jabatan</div>
+                                <div class="info-value">{{ $karyawan->jabatan->nama_jabatan ?? 'Belum diset' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">No. Handphone</div>
+                                <div class="info-value">{{ $karyawan->nohp ?? 'Belum diisi' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">Status Akun</div>
+                                <div class="info-value">
+                                    <span class="badge {{ $karyawan->is_verified ? 'bg-success' : 'bg-danger' }}">
+                                        {{ $karyawan->is_verified ? 'Verified' : 'Unverified' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
+                                <div class="info-label">Role</div>
+                                <div class="info-value">
+                                    <span class="badge bg-{{ $karyawan->role === 'admin' ? 'danger' : 'info' }}">
+                                        {{ ucfirst($karyawan->role) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
+    
+            <!-- Leave History Section -->
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="border-bottom pb-2 mb-4">Riwayat Cuti</h5>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-total">
+                        <p class="stat-number">{{ $karyawan->cutis->count() }}</p>
+                        <p class="stat-label">Total Pengajuan</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-approved">
+                        <p class="stat-number">{{ $karyawan->cutis->where('status', 'approved')->count() }}</p>
+                        <p class="stat-label">Disetujui</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-rejected">
+                        <p class="stat-number">{{ $karyawan->cutis->where('status', 'rejected')->count() }}</p>
+                        <p class="stat-label">Ditolak</p>
+                    </div>
+                </div>
+            </div>
+    
             <div class="mt-4">
                 <a href="{{ route('admin.add-email') }}" class="btn btn-secondary">Kembali</a>
             </div>
@@ -78,8 +166,6 @@
     </div>
 
     <!-- Edit Modal -->
-<!-- filepath: /C:/laragon/www/pengajuan-cuti/resources/views/admin/karyawan/show.blade.php -->
-<!-- Replace the existing edit modal content -->
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

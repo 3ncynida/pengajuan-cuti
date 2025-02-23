@@ -69,4 +69,9 @@ class Karyawan extends Authenticatable
     {
         return $this->role === 'karyawan';
     }
+
+    public function cutis()
+{
+    return $this->hasMany(Cuti::class, 'karyawan_id');
+}
 }

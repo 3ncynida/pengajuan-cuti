@@ -127,6 +127,7 @@ class AdminController extends Controller
 
     public function show(Karyawan $karyawan)
     {
+        $karyawan->load(['jabatan', 'cutis']);
         $jabatans = Jabatan::all();
         return view('admin.karyawan.show', compact('karyawan', 'jabatans'));
     }
