@@ -135,6 +135,7 @@
             </div>
     
             <!-- Leave History Section -->
+            @if($karyawan->role === 'karyawan')
             <div class="row">
                 <div class="col-12">
                     <h5 class="border-bottom pb-2 mb-4">Riwayat Cuti</h5>
@@ -158,6 +159,7 @@
                     </div>
                 </div>
             </div>
+        @endif
     
             <div class="mt-4">
                 <a href="{{ route('admin.add-email') }}" class="btn btn-secondary">Kembali</a>
