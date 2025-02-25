@@ -16,6 +16,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.jabatan.index') }}">Jabatan</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.calendar') }}">
+                            <i class="bi bi-calendar"></i> Kalender
+                        </a>
+                    </li>
                 @else
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('karyawan.dashboard') }}">Dashboard</a>

@@ -46,6 +46,8 @@ Route::middleware(['auth', AdminMiddleware::class])
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+        Route::get('/calendar', [AdminController::class, 'calendar'])->name('calendar');
+
         // Cuti Management
         Route::controller(AdminController::class)->prefix('cuti')->name('cuti.')->group(function () {
             Route::get('/', 'dashboard')->name('index');
@@ -70,6 +72,7 @@ Route::middleware(['auth', AdminMiddleware::class])
             Route::put('/{jabatan}', 'jabatanUpdate')->name('update');
             Route::delete('/{jabatan}', 'jabatanDestroy')->name('destroy');
         });
+
     });
 
 // Karyawan Routes
