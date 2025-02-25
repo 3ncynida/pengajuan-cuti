@@ -12,7 +12,7 @@ class ProfileController extends Controller
     {
         $karyawan = auth()->user();
         $jabatans = Jabatan::all();
-        return view('karyawan.profile', compact('karyawan', 'jabatans'));
+        return view('profile', compact('karyawan', 'jabatans'));
     }
 
     public function updateProfile(Request $request)

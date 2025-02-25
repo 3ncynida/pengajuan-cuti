@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     ProfileController,
     AdminController,
-    KaryawanDashboardController,
-    CutiController
+    KaryawanController,
 };
 use App\Http\Controllers\Auth\KaryawanAuthController;
 use App\Http\Middleware\{AdminMiddleware, KaryawanMiddleware};
@@ -77,14 +76,14 @@ Route::middleware(['auth', AdminMiddleware::class])
 // Karyawan Routes
 Route::middleware(['auth', KaryawanMiddleware::class])->group(function () {
     // Dashboard
-    Route::get('/karyawan/dashboard', [KaryawanDashboardController::class, 'dashboard'])
+    Route::get('/karyawan/dashboard', [KaryawanController::class, 'dashboard'])
         ->name('karyawan.dashboard');
 
-    Route::get('/karyawan/calendar', [KaryawanDashboardController::class, 'calendar'])->name('karyawan.calendar');
+    Route::get('/karyawan/calendar', [KaryawanController::class, 'calendar'])->name('karyawan.calendar');
 
 
     // Cuti Management
-    Route::controller(CutiController::class)->prefix('cuti')->name('cuti.')->group(function () {
+    Route::controller(KaryawanController::class)->prefix('cuti')->name('cuti.')->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
         Route::get('/{cuti}', 'show')->name('show');
