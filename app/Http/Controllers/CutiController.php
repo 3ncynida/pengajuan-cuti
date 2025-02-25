@@ -24,7 +24,7 @@ class CutiController extends Controller
         ]);
 
         $jumlah_hari = Carbon::parse($request->tanggal_mulai)
-                            ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
+            ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
 
         $cuti = new Cuti();
         $cuti->karyawan_id = auth()->id();
@@ -44,41 +44,41 @@ class CutiController extends Controller
         $cuti->save();
 
         return redirect()->route('karyawan.dashboard')
-                        ->with('success', 'Pengajuan cuti berhasil disubmit.');
+            ->with('success', 'Pengajuan cuti berhasil disubmit.');
     }
 
     public function show(Cuti $cuti)
-{
-    // Ensure karyawan can only see their own leave requests
-    if ($cuti->karyawan_id !== auth()->id()) {
-        abort(403);
-    }
-
-    return view('karyawan.cuti.show', compact('cuti'));
-}
-public function destroy(Cuti $cuti)
-{
-    try {
-        // Check if the cuti belongs to the authenticated user
+    {
+        // Ensure karyawan can only see their own leave requests
         if ($cuti->karyawan_id !== auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            abort(403);
         }
 
-        // Only allow deletion of pending requests
-        if ($cuti->status !== 'pending') {
-            return response()->json(['error' => 'Tidak dapat menghapus pengajuan yang sudah diproses'], 403);
-        }
-
-        // Delete the supporting document if exists
-        if ($cuti->dokumen_pendukung) {
-            Storage::delete('public/dokumen_pendukung/' . $cuti->dokumen_pendukung);
-        }
-
-        $cuti->delete();
-        
-        return response()->json(['message' => 'Pengajuan cuti berhasil dihapus']);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Terjadi kesalahan saat menghapus pengajuan cuti'], 500);
+        return view('karyawan.cuti.show', compact('cuti'));
     }
-}
+    public function destroy(Cuti $cuti)
+    {
+        try {
+            // Check if the cuti belongs to the authenticated user
+            if ($cuti->karyawan_id !== auth()->id()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            // Only allow deletion of pending requests
+            if ($cuti->status !== 'pending') {
+                return response()->json(['error' => 'Tidak dapat menghapus pengajuan yang sudah diproses'], 403);
+            }
+
+            // Delete the supporting document if exists
+            if ($cuti->dokumen_pendukung) {
+                Storage::delete('public/dokumen_pendukung/' . $cuti->dokumen_pendukung);
+            }
+
+            $cuti->delete();
+
+            return response()->json(['message' => 'Pengajuan cuti berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan saat menghapus pengajuan cuti'], 500);
+        }
+    }
 }

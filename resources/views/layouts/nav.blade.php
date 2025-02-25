@@ -28,6 +28,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('cuti.create') }}">Ajukan Cuti</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('karyawan.calendar') }}">
+                            <i class="bi bi-calendar"></i> Kalender
+                        </a>
+                    </li>
                 @endif
             </ul>
             <div class="d-flex align-items-center">

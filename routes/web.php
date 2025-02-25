@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    KaryawanController,
+    ProfileController,
     AdminController,
     KaryawanDashboardController,
     CutiController
@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [KaryawanAuthController::class, 'logout'])->name('logout');
 
     // Profile Routes
-    Route::controller(KaryawanController::class)->group(function () {
+    Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'editProfile')->name('karyawan.profile');
         Route::put('/profile', 'updateProfile')->name('karyawan.profile.update');
     });
@@ -46,7 +46,7 @@ Route::middleware(['auth', AdminMiddleware::class])
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-        Route::get('/calendar', [AdminController::class, 'calendar'])->name('calendar');
+        Route::get('/admin/calendar', [AdminController::class, 'calendar'])->name('calendar');
 
         // Cuti Management
         Route::controller(AdminController::class)->prefix('cuti')->name('cuti.')->group(function () {
@@ -72,7 +72,6 @@ Route::middleware(['auth', AdminMiddleware::class])
             Route::put('/{jabatan}', 'jabatanUpdate')->name('update');
             Route::delete('/{jabatan}', 'jabatanDestroy')->name('destroy');
         });
-
     });
 
 // Karyawan Routes
@@ -80,6 +79,9 @@ Route::middleware(['auth', KaryawanMiddleware::class])->group(function () {
     // Dashboard
     Route::get('/karyawan/dashboard', [KaryawanDashboardController::class, 'dashboard'])
         ->name('karyawan.dashboard');
+
+    Route::get('/karyawan/calendar', [KaryawanDashboardController::class, 'calendar'])->name('karyawan.calendar');
+
 
     // Cuti Management
     Route::controller(CutiController::class)->prefix('cuti')->name('cuti.')->group(function () {

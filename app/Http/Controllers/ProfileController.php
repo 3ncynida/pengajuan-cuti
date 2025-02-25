@@ -6,7 +6,7 @@ use App\Models\Karyawan;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
 
-class KaryawanController extends Controller
+class ProfileController extends Controller
 {
     public function editProfile()
     {
