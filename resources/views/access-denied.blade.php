@@ -47,9 +47,15 @@
                 Silakan kembali ke halaman utama atau hubungi administrator jika Anda memerlukan bantuan.
             </p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="{{ url('/') }}" class="btn btn-primary px-4">
-                    Kembali ke Beranda
-                </a>
+                @if (Auth::user()->role == 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-primary px-4">
+                        Kembali ke Dashboard Admin
+                    </a>
+                @else
+                    <a href="{{ route('karyawan.dashboard') }}" class="btn btn-primary px-4">
+                        Kembali ke Dashboard
+                    </a>
+                @endif
                 @auth
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf

@@ -84,7 +84,7 @@
             <div class="mt-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <a href="{{ route('karyawan.dashboard') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                        <i class="fas fa-arrow-left"></i> Kembali
                     </a>
                     
                     @if($cuti->status === 'pending')

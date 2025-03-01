@@ -17,7 +17,6 @@ class AdminController extends Controller
         $totalCutiApproved = Cuti::where('status', 'approved')->count();
         $latestCutiRequests = Cuti::with('karyawan')
             ->latest()
-            ->take(5)
             ->get();
 
         return view('admin.cuti.index', compact(
