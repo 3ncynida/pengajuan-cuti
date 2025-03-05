@@ -12,18 +12,23 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $totalKaryawan = Karyawan::where('role', 'karyawan')->count();
+        $totalKaryawan = Karyawan::count();
         $totalCutiPending = Cuti::where('status', 'pending')->count();
         $totalCutiApproved = Cuti::where('status', 'approved')->count();
-        $latestCutiRequests = Cuti::with('karyawan')
-            ->latest()
-            ->get();
-
+    
+        // Get all leave requests and group them by date
+        $groupedRequests = Cuti::with('karyawan')
+            ->latest('created_at')
+            ->get()
+            ->groupBy(function($cuti) {
+                return $cuti->created_at->format('Y-m-d');
+            });
+    
         return view('admin.cuti.index', compact(
             'totalKaryawan',
-            'totalCutiPending',
+            'totalCutiPending', 
             'totalCutiApproved',
-            'latestCutiRequests'
+            'groupedRequests'
         ));
     }
 

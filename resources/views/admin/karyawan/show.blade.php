@@ -1,90 +1,232 @@
-<!-- filepath: /C:/laragon/www/pengajuan-cuti/resources/views/admin/karyawan/show.blade.php -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detail Karyawan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .detail-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-        .stat-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid;
-        }
-        .stat-pending { border-left-color: #ffc107; }
-        .stat-approved { border-left-color: #198754; }
-        .stat-rejected { border-left-color: #dc3545; }
-        .stat-total { border-left-color: #0d6efd; }
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-        .stat-label {
-            color: #6c757d;
-            margin-bottom: 0;
-        }
-        .info-card {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
+@extends('layouts.template.app')
+
+@section('title', 'Detail Karyawan')
+
+@push('css')
+<style>
+    :root {
+        --primary-light: #bfe1fa;
+        --primary-main: #2196f3;
+        --primary-dark: #1e88e5;
+        --warning-light: #fff8e1;
+        --warning-main: #ffa000;
+        --success-light: #e8f5e9;
+        --success-main: #b4eeb6;
+        --danger-light: #f1b5be;
+        --danger-main: #e44441;
+        --secondary-main: #012970;
+    }
+
+    .main {
+        margin-top: 60px;
+        padding: 20px 30px;
+        background: var(--secondary-light);
+        min-height: calc(100vh - 60px);
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
+        margin-bottom: 30px;
+        border: none;
+    }
+
+    .card-header {
+        background: linear-gradient(to right, var(--primary-light), #ffffff);
+        padding: 25px 30px;
+        border-radius: 15px 15px 0 0;
+        border-bottom: 2px solid rgba(33, 150, 243, 0.1);
+    }
+
+    .card-title {
+        color: var(--secondary-main);
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .info-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
         margin-bottom: 20px;
-        border-left: 4px solid #0d6efd;
+        border: 1px solid rgba(1, 41, 112, 0.1);
+        transition: all 0.3s ease;
     }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
+    }
+
     .info-label {
+        color: var(--secondary-main);
         font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.5rem;
+        font-size: 14px;
+        margin-bottom: 10px;
+        letter-spacing: 0.3px;
     }
+
     .info-value {
-        font-size: 1.1rem;
-        color: #212529;
+        color: #444444;
+        font-size: 16px;
+        font-weight: 500;
     }
+
+    .stat-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .stat-pending {
+        background: linear-gradient(135deg, var(--warning-light) 0%, #ffffff 100%);
+        box-shadow: 0 5px 20px rgba(255, 160, 0, 0.1);
+    }
+
+    .stat-approved {
+        background: linear-gradient(135deg, var(--success-main) 0%, #ffffff 100%);
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.1);
+    }
+
+    .stat-rejected {
+        background: linear-gradient(135deg, var(--danger-light) 0%, #ffffff 100%);
+        box-shadow: 0 5px 20px rgba(239, 83, 80, 0.1);
+    }
+
+    .stat-total {
+        background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
+        box-shadow: 0 5px 20px rgba(33, 150, 243, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--secondary-main);
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
     .badge {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
+        padding: 8px 16px;
+        font-weight: 500;
+        font-size: 13px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
     }
-    </style>
-</head>
-<body>
-    @include('layouts.nav')
-    
-    <div class="container">
-        <div class="detail-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Detail Karyawan</h2>
+
+    .btn {
+        padding: 8px 20px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary {
+        background: var(--primary-main);
+        border: none;
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+
+    .btn-danger {
+        background: var(--danger-main);
+        border: none;
+        box-shadow: 0 4px 12px rgba(239, 83, 80, 0.2);
+    }
+
+    .btn-warning {
+        background: var(--warning-main);
+        border: none;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(255, 160, 0, 0.2);
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        background: linear-gradient(to right, var(--primary-light), #ffffff);
+        padding: 20px 25px;
+        border-bottom: 2px solid rgba(33, 150, 243, 0.1);
+    }
+
+    .modal-title {
+        color: var(--secondary-main);
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    .form-label {
+        color: var(--secondary-main);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px 18px;
+        border-color: #e0e8f9;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        border-color: var(--primary-main);
+        background: #fff;
+    }
+    .btn-close {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-close:hover {
+        transform: rotate(90deg);
+    }
+</style>
+@endpush
+@section('content')
+<main id="main" class="main">
+    <section class="section">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">Detail Karyawan</h5>
                 @if(auth()->id() !== $karyawan->id)
                 <div>
-                    <button type="button" 
-                            class="btn btn-warning"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#editModal">
-                        Edit
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">
+                        <i class="bi bi-pencil"></i> Edit
                     </button>
-                    <button type="button" 
-                            class="btn btn-danger"
-                            onclick="deleteKaryawan({{ $karyawan->id }})">
-                        Delete
+                    <button type="button" class="btn btn-danger" onclick="deleteKaryawan({{ $karyawan->id }})">
+                        <i class="bi bi-trash"></i> Delete
                     </button>
                 </div>
                 @endif
             </div>
-    
+            <div class="card-body">
             <!-- Employee Information Section -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <h5 class="border-bottom pb-2 mb-4">Informasi Karyawan</h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="info-card">
@@ -161,11 +303,14 @@
             </div>
         @endif
     
-            <div class="mt-4">
-                <a href="{{ route('admin.add-email') }}" class="btn btn-secondary">Kembali</a>
-            </div>
+        <div class="mt-4">
+            <a href="{{ route('admin.add-email') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
         </div>
     </div>
+</div>
+</div>
 
     <!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1">
@@ -224,7 +369,6 @@
     </div>
 </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function deleteKaryawan(id) {
             if(confirm('Apakah Anda yakin ingin menghapus karyawan ini?')) {
@@ -242,5 +386,6 @@
             }
         }
     </script>
-</body>
-</html>
+ </section>
+</main>
+@endsection

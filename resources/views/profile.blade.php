@@ -1,35 +1,176 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.template.app')
 
-<head>
-    <title>Complete Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+@section('title', 'Complete Profile')
 
-        .profile-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+@push('css')
+<style>
+    :root {
+        --primary-light: #e3f2fd;
+        --primary-main: #2196f3;
+        --primary-dark: #1e88e5;
+        --secondary-main: #012970;
+        --success-light: #e8f5e9;
+        --success-main: #4caf50;
+        --danger-light: #ffebee;
+        --danger-main: #ef5350;
+    }
 
-        .profile-title {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-    </style>
-</head>
+    .main {
+        margin-top: 0;
+        padding: 20px 30px;
+        background: #f6f9ff;
+        min-height: 100vh;
+    }
 
-<body>
-    <div class="container">
-        <div class="profile-container">
-            <h2 class="profile-title">Complete Your Profile</h2>
+    .profile-section {
+        padding: 60px 0;  /* Increased padding to center content better */
+    }
+
+    .profile-section {
+        padding: 30px 0;
+    }
+
+    .profile-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
+        border: none;
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(to right, var(--primary-light), #ffffff);
+        padding: 25px 30px;
+        border-bottom: 2px solid rgba(33, 150, 243, 0.1);
+    }
+
+    .profile-title {
+        color: var(--secondary-main);
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .profile-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        color: var(--secondary-main);
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 18px;
+        border-color: #e0e8f9;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-main);
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+
+    .form-control:disabled {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--primary-main);
+        border: none;
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(33, 150, 243, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: var(--success-light);
+        color: #2e7d32;
+        border-left: 4px solid var(--success-main);
+    }
+
+    .alert-danger {
+        background: var(--danger-light);
+        color: #c62828;
+        border-left: 4px solid var(--danger-main);
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        padding: 20px 25px;
+        border-bottom: 2px solid rgba(33, 150, 243, 0.1);
+    }
+
+    .modal-body {
+        padding: 25px;
+    }
+
+    .invalid-feedback {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+</style>
+@endpush
+
+
+@section('content')
+<main id="main" class="main">
+    <section class="profile-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <h2 class="profile-title">Complete Your Profile</h2>
+                        </div>
+                        
+                        <div class="profile-body">
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -130,6 +271,11 @@
             });
         </script>
     @endif
-</body>
-
-</html>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+@endsection
