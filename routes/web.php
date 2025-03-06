@@ -86,7 +86,7 @@ Route::middleware(['auth', KaryawanMiddleware::class])->group(function () {
     Route::controller(KaryawanController::class)->prefix('cuti')->name('cuti.')->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('/{cuti}', 'show')->name('show');
+        Route::get('/view/{cuti}', 'show')->name('show');
         Route::delete('/{cuti}', 'destroy')->name('destroy'); // Move this inside the group
     });
 });
