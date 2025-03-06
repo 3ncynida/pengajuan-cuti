@@ -342,6 +342,15 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="nama_karyawan" class="form-label">Nama Karyawan</label>
+                        <input type="text" class="form-control @error('nama_karyawan') is-invalid @enderror" 
+                               id="nama_karyawan" name="nama_karyawan" value="{{ old('nama_karyawan') }}" required>
+                        @error('nama_karyawan')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" 
                                id="email" name="email" value="{{ old('email') }}" required>
@@ -349,14 +358,19 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role</label>
-                        <select class="form-select @error('role') is-invalid @enderror" 
-                                id="role" name="role" required>
-                            <option value="karyawan">Karyawan</option>
-                            <option value="admin">Admin</option>
+                        <label for="jabatan_id" class="form-label">Jabatan</label>
+                        <select class="form-select @error('jabatan_id') is-invalid @enderror" 
+                                id="jabatan_id" name="jabatan_id" required>
+                            <option value="">Pilih Jabatan</option>
+                            @foreach($jabatans as $jabatan)
+                                <option value="{{ $jabatan->id }}" {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
+                                    {{ $jabatan->nama_jabatan }}
+                                </option>
+                            @endforeach
                         </select>
-                        @error('role')
+                        @error('jabatan_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -393,7 +407,7 @@ $(document).ready(function() {
             }
         },
         pageLength: 10,
-        ordering: true,
+        ordering: false,
         responsive: true,
         columnDefs: [
             { orderable: false, targets: [0, 6] }

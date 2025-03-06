@@ -251,7 +251,7 @@
                     @endif
 
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table id='karyawanTable' class="table table-hover">
                             <thead>
                                 <tr>
                                     <th width="10%">No</th>
@@ -349,7 +349,54 @@
 @endsection
 
 @push('scripts')
-    <script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#karyawanTable').DataTable({
+            language: {
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Tidak ada data yang ditemukan",
+                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                infoEmpty: "Tidak ada data yang tersedia",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                search: "Cari:",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            },
+            pageLength: 10,
+            ordering: true,
+            responsive: true,
+            searching: false,
+            columnDefs: [
+                {
+                    targets: [0], // No column
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    targets: [2], // Actions column
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+            order: [[1, 'asc']], // Sort by nama_jabatan column by default
+            dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                 "<'row'<'col-sm-12'tr>>" +
+                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            drawCallback: function(settings) {
+                // Add zebra-striping after each draw
+                $('tbody tr:odd').addClass('table-light');
+            }
+        });
+    });
+
         function deleteJabatan(id) {
             if (confirm('Apakah Anda yakin ingin menghapus jabatan ini?')) {
                 fetch(`/admin/jabatan/${id}`, {

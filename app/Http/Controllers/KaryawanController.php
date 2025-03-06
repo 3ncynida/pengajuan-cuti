@@ -87,10 +87,10 @@ class KaryawanController extends Controller
             'alasan' => 'required|string|max:255',
             'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
-
+    
         $jumlah_hari = Carbon::parse($request->tanggal_mulai)
             ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
-
+    
         $cuti = new Cuti();
         $cuti->karyawan_id = auth()->id();
         $cuti->tanggal_mulai = $request->tanggal_mulai;
@@ -98,16 +98,17 @@ class KaryawanController extends Controller
         $cuti->jumlah_hari = $jumlah_hari;
         $cuti->alasan = $request->alasan;
         $cuti->status = 'pending';
-
+    
         if ($request->hasFile('dokumen_pendukung')) {
             $file = $request->file('dokumen_pendukung');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/dokumen_pendukung', $filename);
+            // Store directly in the public disk
+            $file->move(public_path('storage/dokumen_pendukung'), $filename);
             $cuti->dokumen_pendukung = $filename;
         }
-
+    
         $cuti->save();
-
+    
         return redirect()->route('karyawan.dashboard')
             ->with('success', 'Pengajuan cuti berhasil disubmit.');
     }
@@ -134,16 +135,18 @@ class KaryawanController extends Controller
                 return response()->json(['error' => 'Tidak dapat menghapus pengajuan yang sudah diproses'], 403);
             }
 
-            // Delete the supporting document if exists
-            if ($cuti->dokumen_pendukung) {
-                Storage::delete('public/dokumen_pendukung/' . $cuti->dokumen_pendukung);
+        // Delete the supporting document if exists
+        if ($cuti->dokumen_pendukung) {
+            $path = public_path('storage/dokumen_pendukung/' . $cuti->dokumen_pendukung);
+            if (file_exists($path)) {
+                unlink($path);
             }
-
-            $cuti->delete();
-
-            return response()->json(['message' => 'Pengajuan cuti berhasil dihapus']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Terjadi kesalahan saat menghapus pengajuan cuti'], 500);
         }
+
+        $cuti->delete();
+        return response()->json(['message' => 'Pengajuan cuti berhasil dihapus']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Terjadi kesalahan saat menghapus pengajuan cuti'], 500);
+    }
     }
 }

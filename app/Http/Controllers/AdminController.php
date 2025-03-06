@@ -15,26 +15,35 @@ class AdminController extends Controller
         $totalKaryawan = Karyawan::count();
         $totalCutiPending = Cuti::where('status', 'pending')->count();
         $totalCutiApproved = Cuti::where('status', 'approved')->count();
-    
+
+        // Get the start and end of current week
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        // Get total approved leaves for current week
+        $totalCutiApproved = Cuti::where('status', 'approved')
+            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->count();
+
         // Get all leave requests and group them by date
         $groupedRequests = Cuti::with('karyawan')
             ->latest('created_at')
             ->get()
-            ->groupBy(function($cuti) {
+            ->groupBy(function ($cuti) {
                 return $cuti->created_at->format('Y-m-d');
             });
-    
-        return view('admin.cuti.index', compact(
-            'totalKaryawan',
-            'totalCutiPending', 
-            'totalCutiApproved',
-            'groupedRequests'
-        ));
+
+            return view('admin.cuti.index', compact(
+                'totalKaryawan',
+                'totalCutiPending',
+                'totalCutiApproved',
+                'groupedRequests'
+            ));
     }
 
     public function showAddEmailForm()
     {
-        $karyawans = Karyawan::with('jabatan')->get();
+        $karyawans = Karyawan::orderBy('nama_karyawan', 'asc')->get();
         $jabatans = Jabatan::all();
         return view('admin.add-email', compact('karyawans', 'jabatans'));
     }
@@ -96,7 +105,7 @@ class AdminController extends Controller
 
     public function jabatanIndex()
     {
-        $jabatans = Jabatan::all();
+        $jabatans = Jabatan::orderBy('nama_jabatan', 'asc')->get();
         return view('admin.jabatan.index', compact('jabatans'));
     }
 
@@ -175,27 +184,27 @@ class AdminController extends Controller
     public function calendar()
     {
         $cutis = Cuti::with('karyawan')->get();
-        
+
         $events = $cutis->map(function ($cuti) {
             $statusColor = [
                 'pending' => '#ffc107',
                 'approved' => '#198754',
                 'rejected' => '#dc3545'
             ];
-    
+
             $statusLabel = [
                 'pending' => 'Pending',
                 'approved' => 'Approved',
                 'rejected' => 'Rejected'
             ];
-    
+
             // Format the title to include leave period
             $title = sprintf(
                 '%s (%s)',
                 $cuti->karyawan->nama_karyawan,
                 $statusLabel[$cuti->status]
             );
-        
+
             return [
                 'title' => $title,
                 'start' => Carbon::parse($cuti->tanggal_mulai)->format('Y-m-d'),
@@ -211,7 +220,7 @@ class AdminController extends Controller
                 ]
             ];
         });
-    
+
         return view('admin.calendar', compact('events'));
     }
 }
