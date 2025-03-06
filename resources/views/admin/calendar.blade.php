@@ -154,6 +154,14 @@
         border: none;
         box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
     }
+
+    .btn-close {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-close:hover {
+        transform: rotate(90deg);
+    }
 </style>
 @endpush
 

@@ -9,6 +9,7 @@
     <meta name="keywords" content="cuti, pengajuan cuti, sistem cuti">  
 
     <!-- Favicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="{{ asset('template/assets/img/favicon.png') }}" rel="icon">
     <link href="{{ asset('template/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
 

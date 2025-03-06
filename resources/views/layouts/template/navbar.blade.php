@@ -15,9 +15,9 @@
                     <li><a href="{{ route('admin.jabatan.index') }}" class="{{ Request::is('admin/jabatan') ? 'active' : '' }}">Jabatan</a></li>
                     <li><a href="{{ route('admin.calendar') }}" class="{{ Request::is('admin/admin/calendar') ? 'active' : '' }}">Kalender</a></li>
                 @else
-                    <li><a href="{{ route('karyawan.dashboard') }}" class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">Dashboard</a></li>
-                    <li><a href="{{ route('cuti.create') }}" class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">Ajukan Cuti</a></li>
-                    <li><a href="{{ route('karyawan.calendar') }}" class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">Kalender</a></li>
+                    <li><a href="{{ route('karyawan.dashboard') }}" class="{{ Request::is('karyawan/dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                    <li><a href="{{ route('cuti.create') }}" class="{{ Request::is('cuti/*') ? 'active' : '' }}">Ajukan Cuti</a></li>
+                    <li><a href="{{ route('karyawan.calendar') }}" class="{{ Request::is('karyawan/calendar') ? 'active' : '' }}">Kalender</a></li>
                 @endif
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
