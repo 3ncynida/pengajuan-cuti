@@ -17,16 +17,25 @@
         --danger-light: #ffebee;
         --danger-main: #ef5350;
         --secondary-main: #012970;
+        --secondary-light: #f6f9ff;
     }
 
     .main {
         margin-top: 60px;
         padding: 20px 30px;
+        background: var(--secondary-light);
+        min-height: calc(100vh - 60px);
+    }
+
+    .section {
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
     }
 
     .card {
         background: #fff;
-        border-radius: 15px;
+        border-radius: 20px;
         box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
         margin-bottom: 30px;
         border: none;

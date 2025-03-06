@@ -20,13 +20,19 @@
     .main {
         margin-top: 60px;
         padding: 20px 30px;
-        background: var(--secondary-light);
+        background: #f6f9ff;
         min-height: calc(100vh - 60px);
+    }
+
+    .section {
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
     }
 
     .card {
         background: #fff;
-        border-radius: 15px;
+        border-radius: 20px;
         box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
         margin-bottom: 30px;
         border: none;
@@ -35,7 +41,7 @@
     .card-header {
         background: linear-gradient(to right, var(--primary-light), #ffffff);
         padding: 25px 30px;
-        border-radius: 15px 15px 0 0;
+        border-radius: 20px 20px 0 0;
         border-bottom: 2px solid rgba(33, 150, 243, 0.1);
     }
 
@@ -49,12 +55,13 @@
 
     .card-body {
         padding: 30px;
+        border-radius: 20px;
     }
 
     .info-card {
         background: #fff;
         padding: 25px;
-        border-radius: 15px;
+        border-radius: 20px;
         margin-bottom: 20px;
         border: 1px solid rgba(1, 41, 112, 0.1);
         transition: all 0.3s ease;

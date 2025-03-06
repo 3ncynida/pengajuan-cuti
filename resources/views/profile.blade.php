@@ -18,16 +18,13 @@
     .main {
         margin-top: 0;
         padding: 20px 30px;
-        background: #f6f9ff;
         min-height: 100vh;
     }
 
     .profile-section {
         padding: 60px 0;  /* Increased padding to center content better */
-    }
-
-    .profile-section {
-        padding: 30px 0;
+        border-radius: 20px;
+        background: #f6f9ff;
     }
 
     .profile-card {

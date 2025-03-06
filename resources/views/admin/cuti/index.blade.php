@@ -19,7 +19,19 @@
         padding: 25px;
         border-radius: 15px;
         margin: 25px 0;
-        background: #fff;
+        background: #f5f6fa;
+    }
+
+    .section {
+        padding: 20px 30px;
+        background: #f6f9ff;
+        min-height: calc(100vh - 60px);
+    }
+
+    .dashboard-stats h3 {
+        color: var(--primary-dark);
+        font-size: 2.2rem;
+        font-weight: 600;
     }
 
     .stat-card {

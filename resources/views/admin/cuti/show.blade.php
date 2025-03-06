@@ -15,6 +15,13 @@
         padding: 20px 30px;
     }
 
+    .section {
+        background: #f6f9ff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(1, 41, 112, 0.1);
+    }
+
     .pagetitle {
         margin-bottom: 20px;
     }
