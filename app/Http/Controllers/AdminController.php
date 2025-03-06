@@ -16,13 +16,13 @@ class AdminController extends Controller
         $totalCutiPending = Cuti::where('status', 'pending')->count();
         $totalCutiApproved = Cuti::where('status', 'approved')->count();
 
-        // Get the start and end of current week
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+        // Get the start and end of current month
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
 
-        // Get total approved leaves for current week
+        // Get total approved leaves for current month
         $totalCutiApproved = Cuti::where('status', 'approved')
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         // Get all leave requests and group them by date

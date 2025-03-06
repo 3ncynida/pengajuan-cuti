@@ -186,69 +186,70 @@
 
         .card-body {
             padding: 30px;
+        }
 
-            .stat-card:first-child {
-                background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
-                border: 1px solid rgba(33, 150, 243, 0.1);
-                box-shadow: 0 5px 20px rgba(33, 150, 243, 0.1);
-            }
+        .stat-card:first-child {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%);
+            border: 1px solid rgba(33, 150, 243, 0.1);
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.1);
+        }
 
-            .stat-card:first-child .stat-icon {
-                color: var(--primary-main);
-                background: rgba(33, 150, 243, 0.1);
-            }
+        .stat-card:first-child .stat-icon {
+            color: var(--primary-main);
+            background: rgba(33, 150, 243, 0.1);
+        }
 
-            .stat-card:first-child h3 {
-                color: var(--primary-dark);
-            }
+        .stat-card:first-child h3 {
+            color: var(--primary-dark);
+        }
 
-            /* Second card - Pending Cuti (Yellow) */
-            .stat-card:nth-child(2) {
-                background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
-                border: 1px solid rgba(255, 160, 0, 0.1) !important;
-                box-shadow: 0 5px 20px rgba(255, 160, 0, 0.1) !important;
-            }
+        /* Second card - Pending Cuti (Yellow) */
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%) !important;
+            border: 1px solid rgba(255, 160, 0, 0.1) !important;
+            box-shadow: 0 5px 20px rgba(255, 160, 0, 0.1) !important;
+        }
 
-            .stat-card:nth-child(2) .stat-icon {
-                color: #ffa000 !important;
-                background: rgba(255, 160, 0, 0.1) !important;
-            }
+        .stat-card:nth-child(2) .stat-icon {
+            color: #ffa000 !important;
+            background: rgba(255, 160, 0, 0.1) !important;
+        }
 
-            .stat-card:nth-child(2) h3 {
-                color: #f57c00 !important;
-            }
+        .stat-card:nth-child(2) h3 {
+            color: #f57c00 !important;
+        }
 
-            /* Third card - Approved Cuti (Green) */
-            .stat-card:nth-child(3) {
-                background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%) !important;
-                border: 1px solid rgba(76, 175, 80, 0.1) !important;
-                box-shadow: 0 5px 20px rgba(76, 175, 80, 0.1) !important;
-            }
+        /* Third card - Approved Cuti (Green) */
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%) !important;
+            border: 1px solid rgba(76, 175, 80, 0.1) !important;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.1) !important;
+        }
 
-            .stat-card:nth-child(3) .stat-icon {
-                color: #4caf50 !important;
-                background: rgba(76, 175, 80, 0.1) !important;
-            }
+        .stat-card:nth-child(3) .stat-icon {
+            color: #4caf50 !important;
+            background: rgba(76, 175, 80, 0.1) !important;
+        }
 
-            .stat-card:nth-child(3) h3 {
-                color: #388e3c !important;
-            }
+        .stat-card:nth-child(3) h3 {
+            color: #388e3c !important;
+        }
 
-            /* Hover effects */
-            .stat-card:first-child:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
-            }
+        /* Hover effects */
+        .stat-card:first-child:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
+        }
 
-            .stat-card:nth-child(2):hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(255, 160, 0, 0.2) !important;
-            }
+        .stat-card:nth-child(2):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 160, 0, 0.2) !important;
+        }
 
-            .stat-card:nth-child(3):hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2) !important;
-            }
+        .stat-card:nth-child(3):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2) !important;
+        }
     </style>
 @endpush
 
@@ -289,7 +290,7 @@
                                         <i class='bi bi-check-circle stat-icon text-success'></i>
                                         <div>
                                             <h3 class="mb-0">{{ $totalCutiApproved }}</h3>
-                                            <p class="text-muted mb-0">Approved Cuti (perminggu)</p>
+                                            <p class="text-muted mb-0">Approved Cuti (perbulan)</p>
                                         </div>
                                     </div>
                                 </div>
