@@ -57,7 +57,7 @@ Route::middleware(['auth', AdminMiddleware::class])
 
         // Karyawan Management
         Route::controller(AdminController::class)->group(function () {
-            Route::get('/add-email', 'showAddEmailForm')->name('add-email');
+            Route::get('/karyawan', 'showAddEmailForm')->name('karyawan.index');
             Route::post('/store-email', 'storeEmail')->name('store-email');
             Route::get('/karyawan/{karyawan}', 'show')->name('karyawan.show');
             Route::put('/karyawan/{karyawan}', 'updateKaryawan')->name('update-karyawan');

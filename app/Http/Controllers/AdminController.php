@@ -10,51 +10,57 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // Get selected month or default to current month
+        $selectedMonth = $request->input('month', Carbon::now()->format('Y-m'));
+        $date = Carbon::createFromFormat('Y-m', $selectedMonth);
+
         $totalKaryawan = Karyawan::count();
         $totalCutiPending = Cuti::where('status', 'pending')->count();
-        $totalCutiApproved = Cuti::where('status', 'approved')->count();
 
-        // Get the start and end of current month
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
-
-        // Get total approved leaves for current month
+        // Get approved leaves for selected month
         $totalCutiApproved = Cuti::where('status', 'approved')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
             ->count();
 
-        // Get all leave requests and group them by date
-        $groupedRequests = Cuti::with('karyawan')
-            ->latest('created_at')
-            ->get()
-            ->groupBy(function ($cuti) {
-                return $cuti->created_at->format('Y-m-d');
-            });
+        // Get leave requests for selected month
+        $requests = Cuti::with('karyawan')
+            ->whereYear('created_at', $date->year)
+            ->whereMonth('created_at', $date->month)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            return view('admin.cuti.index', compact(
-                'totalKaryawan',
-                'totalCutiPending',
-                'totalCutiApproved',
-                'groupedRequests'
-            ));
+        return view('admin.cuti.index', compact(
+            'totalKaryawan',
+            'totalCutiPending',
+            'totalCutiApproved',
+            'requests',
+            'selectedMonth'
+        ));
     }
 
     public function showAddEmailForm()
     {
         $karyawans = Karyawan::orderBy('nama_karyawan', 'asc')->get();
         $jabatans = Jabatan::all();
-        return view('admin.add-email', compact('karyawans', 'jabatans'));
+        return view('admin.karyawan.index', compact('karyawans', 'jabatans'));
     }
 
     public function storeEmail(Request $request)
     {
-        $request->validate([
-            'nama_karyawan' => ['required', 'string', 'max:25', 'unique:karyawans'],
-            'email' => ['required', 'string', 'email', 'max:25', 'unique:karyawans'],
-            'jabatan_id' => ['required', 'exists:jabatans,id'],
-        ]);
+        $request->validate(
+            [
+                'nama_karyawan' => ['required', 'string', 'max:25', 'unique:karyawans'],
+                'email' => ['required', 'string', 'email', 'max:25', 'unique:karyawans'],
+                'jabatan_id' => ['required', 'exists:jabatans,id'],
+            ],
+            [
+                'nama_karyawan.unique' => 'Nama karyawan sudah terdaftar, silakan gunakan nama lain!',
+                'email.unique' => 'Email karyawan sudah terdaftar, silakan gunakan email lain!'
+            ]
+        );
 
         try {
             $karyawan = Karyawan::create([
@@ -69,7 +75,8 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Email karyawan berhasil didaftarkan.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
-                'email' => 'Gagal mendaftarkan email: ' . $e->getMessage()
+                'email' => 'Gagal mendaftarkan email: ' . $e->getMessage(),
+                'nama_karyawan' => 'Gagal mendaftarkan email: ' . $e->getMessage()
             ])->withInput();
         }
     }
@@ -100,7 +107,7 @@ class AdminController extends Controller
         }
 
         $karyawan->delete();
-        return response()->json(['message' => 'Karyawan deleted successfully']);
+        return response()->json(['message' => 'Karyawan berhasil dihapus']);
     }
 
     public function jabatanIndex()
@@ -113,6 +120,8 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama_jabatan' => 'required|string|max:255|unique:jabatans'
+        ], [
+            'nama_jabatan.unique' => 'Jabatan sudah terdaftar'
         ]);
 
         Jabatan::create($request->all());
@@ -125,6 +134,8 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama_jabatan' => 'required|string|max:255|unique:jabatans,nama_jabatan,' . $jabatan->id
+        ], [
+            'nama_jabatan.unique' => 'Jabatan sudah terdaftar'
         ]);
 
         $jabatan->update($request->all());

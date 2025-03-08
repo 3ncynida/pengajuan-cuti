@@ -311,7 +311,7 @@
         @endif
     
         <div class="mt-4">
-            <a href="{{ route('admin.add-email') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.karyawan.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
@@ -387,7 +387,7 @@
                     }
                 }).then(response => {
                     if (response.ok) {
-                        window.location.href = '{{ route("admin.add-email") }}';
+                        window.location.href = '{{ route("admin.karyawan.index") }}';
                     }
                 });
             }

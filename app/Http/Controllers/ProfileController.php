@@ -18,8 +18,12 @@ class ProfileController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'nama_karyawan' => 'required|string|max:25',
+            'nama_karyawan' => 'required|string|max:25|unique:karyawans,nama_karyawan,' . auth()->id(),
             'nohp' => 'required|string|max:20|unique:karyawans,nohp,' . auth()->id(),
+        ],
+        [
+            'nama_karyawan.unique' => 'Nama karyawan sudah terdaftar, silakan gunakan nama lain!',
+            'nohp.unique' => 'Nomor HP sudah terdaftar, silakan gunakan nomor lain!',
         ]);
 
         $karyawan = auth()->user();

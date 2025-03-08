@@ -298,13 +298,22 @@
                         </div>
 
                         <!-- Leave Requests List -->
-                        <h5 class="card-title">Daftar Pengajuan Cuti</h5>
-
-                        @foreach ($groupedRequests as $date => $requests)
-                            <div class="date-group">
-                                <h5 class="border-bottom pb-2">
-                                    {{ \Carbon\Carbon::parse($date)->translatedFormat('d F Y') }}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="card-title mb-0">
+                                    Daftar Pengajuan Cuti
                                 </h5>
+                                <div class="month-filter">
+                                    <form action="{{ route('admin.dashboard') }}" method="GET" class="d-flex align-items-center">
+                                        <input type="month" 
+                                               name="month" 
+                                               class="form-control" 
+                                               value="{{ $selectedMonth }}"
+                                               onchange="this.form.submit()"
+                                               style="width: 200px;">
+                                    </form>
+                                </div>
+                            </div>
                                 <div class="table-responsive">
                                     <table class="table table-borderless datatable">
                                         <thead>
@@ -325,7 +334,7 @@
                                                     </td>
                                                     <td>{{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y') }}
                                                     </td>
-                                                    <td>{{ \Carbon\Carbon::parse($cuti->created_at)->format('H:i') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($cuti->created_at)->format('d/m/H:i') }}</td>
                                                     <td>
                                                         <span
                                                             class="badge bg-{{ $cuti->status === 'pending' ? 'warning' : ($cuti->status === 'approved' ? 'success' : 'danger') }}">
@@ -344,7 +353,6 @@
                                     </table>
                                 </div>
                             </div>
-                        @endforeach
                     </div>
                 </div>
             </div>

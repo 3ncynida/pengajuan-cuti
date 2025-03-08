@@ -11,7 +11,7 @@
                         <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.add-email') }}">Karyawan</a>
+                        <a class="nav-link" href="{{ route('admin.karyawan.index') }}">Karyawan</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.jabatan.index') }}">Jabatan</a>
