@@ -44,7 +44,7 @@ class AdminController extends Controller
     public function showAddEmailForm()
     {
         $karyawans = Karyawan::orderBy('nama_karyawan', 'asc')->get();
-        $jabatans = Jabatan::all();
+        $jabatans = Jabatan::orderBy('nama_jabatan', 'asc')->get();
         return view('admin.karyawan.index', compact('karyawans', 'jabatans'));
     }
 

@@ -11,16 +11,24 @@ class JabatanSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create HRD jabatan
-        $hrd = Jabatan::create([
-            'nama_jabatan' => 'HRD'
-        ]);
+        // List nama jabatan
+        $namaJabatan = ['HRD', 'Strategist', 'Developer', 'Designer', 'Tester', 'Analyst', 'Manager', 'Supervisor', 'Staff', 'Intern'];
 
-        // Create HRD admin user
+        // Simpan semua jabatan ke dalam database
+        foreach ($namaJabatan as $nama) {
+            Jabatan::create([
+                'nama_jabatan' => $nama,
+            ]);
+        }
+
+        // Ambil jabatan HRD untuk digunakan oleh Admin
+        $hrd = Jabatan::where('nama_jabatan', 'HRD')->first();
+
+        // Buat user admin dengan jabatan HRD
         Karyawan::create([
-            'nama_karyawan' => 'Admin HRD',
-            'email' => 'hrd@example.com',
-            'jabatan_id' => $hrd->id,
+            'nama_karyawan' => 'Admin',
+            'email' => 'admin@example.com',
+            'jabatan_id' => $hrd->id, // Menggunakan jabatan HRD
             'role' => 'admin',
             'password' => Hash::make('password123'),
             'is_verified' => true,

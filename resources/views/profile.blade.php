@@ -164,7 +164,7 @@
                 <div class="col-md-8">
                     <div class="profile-card">
                         <div class="profile-header">
-                            <h2 class="profile-title">Complete Your Profile</h2>
+                            <h2 class="profile-title">Lengkapi profilemu</h2>
                         </div>
                         
                         <div class="profile-body">
@@ -200,7 +200,7 @@
                 <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
                     <input type="email" class="form-control" value="{{ $karyawan->email }}" disabled>
-                    <small class="text-muted">Email cannot be changed</small>
+                    <small class="text-muted">Email tidak bisa dirubah</small>
                 </div>
 
                 <div class="mb-3">
@@ -216,7 +216,7 @@
                     <label for="jabatan_id" class="form-label">Jabatan:</label>
                     <input type="text" class="form-control" value="{{ $karyawan->jabatan->nama_jabatan ?? '' }}"
                         disabled>
-                    <small class="text-muted">Jabatan cannot be changed</small>
+                    <small class="text-muted">Jabatan tidak bisa dirubah</small>
                 </div>
 
                 <div class="d-grid gap-2">
