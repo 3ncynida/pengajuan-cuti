@@ -15,6 +15,26 @@
             --secondary-main: #012970;
         }
 
+        .month-filter .form-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e8f9;
+            color: #012970;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .month-filter .form-select:focus {
+            border-color: var(--primary-main);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            outline: none;
+        }
+
+        .month-filter .form-select:hover {
+            border-color: var(--primary-main);
+        }
+
         .dashboard-stats {
             padding: 25px;
             border-radius: 15px;
@@ -304,58 +324,91 @@
                                     Daftar Pengajuan Cuti
                                 </h5>
                                 <div class="month-filter">
-                                    <form action="{{ route('admin.dashboard') }}" method="GET" class="d-flex align-items-center">
-                                        <input type="month" 
-                                               name="month" 
-                                               class="form-control" 
-                                               value="{{ $selectedMonth }}"
-                                               onchange="this.form.submit()"
-                                               style="width: 200px;">
+                                    <form action="{{ route('admin.dashboard') }}" method="GET"
+                                        class="d-flex align-items-center">
+                                        <select name="month" class="form-select" onchange="this.form.submit()"
+                                            style="width: 200px;">
+                                            @php
+                                                $months = [];
+                                                for ($i = 0; $i < 12; $i++) {
+                                                    $date = \Carbon\Carbon::now()->startOfYear()->addMonths($i);
+                                                    $months[$date->format('Y-m')] = $date->format('F Y');
+                                                }
+                                            @endphp
+                                            @foreach ($months as $value => $label)
+                                                <option value="{{ $value }}"
+                                                    {{ $selectedMonth === $value ? 'selected' : '' }}>
+                                                    {{ $label }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </form>
                                 </div>
                             </div>
-                                <div class="table-responsive">
-                                    <table class="table table-borderless datatable">
-                                        <thead>
+                            <div class="table-responsive">
+                                <table class="table table-borderless datatable">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Karyawan</th>
+                                            <th scope="col">Tanggal Mulai</th>
+                                            <th scope="col">Tanggal Selesai</th>
+                                            <th scope="col">Waktu Pengajuan</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($requests as $cuti)
                                             <tr>
-                                                <th scope="col">Karyawan</th>
-                                                <th scope="col">Tanggal Mulai</th>
-                                                <th scope="col">Tanggal Selesai</th>
-                                                <th scope="col">Waktu Pengajuan</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Aksi</th>
+                                                <td>{{ $cuti->karyawan->nama_karyawan }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y') }}
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y') }}
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($cuti->created_at)->format('d/m/H:i') }}</td>
+                                                <td>
+                                                    <span
+                                                        class="badge bg-{{ $cuti->status === 'pending' ? 'warning' : ($cuti->status === 'approved' ? 'success' : 'danger') }}">
+                                                        {{ ucfirst($cuti->status) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('admin.cuti.show', $cuti) }}"
+                                                        class="btn btn-primary btn-sm">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </a>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($requests as $cuti)
-                                                <tr>
-                                                    <td>{{ $cuti->karyawan->nama_karyawan }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y') }}
-                                                    </td>
-                                                    <td>{{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y') }}
-                                                    </td>
-                                                    <td>{{ \Carbon\Carbon::parse($cuti->created_at)->format('d/m/H:i') }}</td>
-                                                    <td>
-                                                        <span
-                                                            class="badge bg-{{ $cuti->status === 'pending' ? 'warning' : ($cuti->status === 'approved' ? 'success' : 'danger') }}">
-                                                            {{ ucfirst($cuti->status) }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('admin.cuti.show', $cuti) }}"
-                                                            class="btn btn-primary btn-sm">
-                                                            <i class="bi bi-eye"></i> View
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 @endsection
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const monthInput = document.querySelector('input[type="month"]');
+
+            // Prevent the clear button functionality
+            monthInput.addEventListener('search', function(e) {
+                e.preventDefault();
+            });
+
+            // Additional security to prevent value clearing
+            monthInput.addEventListener('mouseup', function(e) {
+                const initialValue = this.value;
+                setTimeout(() => {
+                    if (!this.value) {
+                        this.value = initialValue;
+                    }
+                }, 1);
+            });
+        });
+    </script>
+@endpush
