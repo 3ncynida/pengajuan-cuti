@@ -201,15 +201,9 @@
 @section('content')
 <main id="main" class="main">
     <div class="container py-4">
-        <div class="dashboard-header">
-            <h2 class="dashboard-title">Dashboard Karyawan</h2>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                </ol>
-            </nav>
-        </div>
 
-        <div class="row">
+
+        <div class="row mt-5">
             <div class="col-md-4">
                 <div class="stat-card">
                     <div class="d-flex align-items-center">
@@ -253,8 +247,9 @@
                         <tr>
                             <th>Tanggal Mulai</th>
                             <th>Tanggal Selesai</th>
+                            <th>Waktu Diajukan</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -262,6 +257,7 @@
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y') }}</td>   
+                            <td>{{ \Carbon\Carbon::parse($cuti->created_at)->format('d/m/H:i') }}</td>
                             <td>
                                 <span class="badge bg-{{ $cuti->status === 'pending' ? 'warning' : ($cuti->status === 'approved' ? 'success' : 'danger') }}">
                                     {{ ucfirst($cuti->status) }}
