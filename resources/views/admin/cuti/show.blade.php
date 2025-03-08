@@ -225,6 +225,27 @@
         .info-group.status-rejected h5 i {
             color: #d32f2f;
         }
+
+        .document-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: var(--secondary-main);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .document-link:hover {
+            background: var(--primary-light);
+            color: var(--primary-main);
+            transform: translateY(-2px);
+        }
+
+        .document-link i {
+            margin-right: 8px;
+        }
     </style>
 @endpush
 
