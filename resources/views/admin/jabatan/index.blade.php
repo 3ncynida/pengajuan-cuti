@@ -264,7 +264,7 @@
                                 <tr>
                                     <th width="10%">No</th>
                                     <th>Nama Jabatan</th>
-                                    <th width="20%">Actions</th>
+                                    <th width="20%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>

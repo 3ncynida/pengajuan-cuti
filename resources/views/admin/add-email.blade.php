@@ -304,7 +304,7 @@
                                     <th style="width: 15%">Jabatan</th>
                                     <th style="width: 12%">Status</th>
                                     <th style="width: 10%">Role</th>
-                                    <th style="width: 13%">Action</th>
+                                    <th style="width: 13%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
