@@ -137,6 +137,14 @@
             font-size: 13px;
             margin-top: 5px;
         }
+
+        .btn-close {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-close:hover {
+            transform: rotate(90deg);
+        }
     </style>
 @endpush
 
