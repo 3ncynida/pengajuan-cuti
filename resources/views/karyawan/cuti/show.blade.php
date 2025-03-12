@@ -231,6 +231,20 @@
                         </div>
                         <div class="detail-body">
                             <dl class="row mb-0">
+                                <dt class="col-sm-4 info-label">Jenis Cuti</dt>
+                                <dd class="col-sm-8 info-value">
+                                    @php
+                                        $jenisLabels = [
+                                            'tahunan' => 'Cuti Tahunan',
+                                            'khusus' => 'Cuti Khusus',
+                                            'haid' => 'Cuti Haid',
+                                            'melahirkan' => 'Cuti Melahirkan',
+                                            'ayah' => 'Cuti Ayah'
+                                        ];
+                                    @endphp
+                                    {{ $jenisLabels[$cuti->jenis_cuti] }}
+                                </dd>
+                            
                                 <dt class="col-sm-4 info-label">Tanggal Mulai</dt>
                                 <dd class="col-sm-8 info-value">{{ $cuti->tanggal_mulai->format('d F Y') }}</dd>
 

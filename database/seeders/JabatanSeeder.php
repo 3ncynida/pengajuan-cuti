@@ -30,7 +30,7 @@ class JabatanSeeder extends Seeder
             'email' => 'admin@example.com',
             'jabatan_id' => $hrd->id, // Menggunakan jabatan HRD
             'role' => 'admin',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('123123123'),
             'is_verified' => true,
             'nohp' => '081234567890'
         ]);

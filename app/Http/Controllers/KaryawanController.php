@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuti;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class KaryawanController extends Controller
@@ -75,51 +75,157 @@ class KaryawanController extends Controller
 
     public function create()
     {
-        return view('karyawan.cuti.create');
+        $karyawan = auth()->user();
+        $cutiQuota = $karyawan->cutiQuota;
+
+        \Log::info('Create Form Data:', [
+            'karyawan' => $karyawan->only(['id', 'nama_karyawan', 'jenis_kelamin']),
+            'cutiQuota' => $cutiQuota
+        ]);
+
+        return view('karyawan.cuti.create', compact('cutiQuota'));
     }
 
     public function store(Request $request)
     {
-        // Check for pending leave requests
-        $hasPendingCuti = Cuti::where('karyawan_id', auth()->id())
-            ->where('status', 'pending')
-            ->exists();
-
-        if ($hasPendingCuti) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Anda masih memiliki pengajuan cuti yang pending. Harap tunggu hingga pengajuan sebelumnya diproses.');
-        }
-
-        $request->validate([
+        // Validate request
+        $validated = $request->validate([
             'tanggal_mulai' => 'required|date|after_or_equal:today',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan' => 'required|string|max:255',
+            'jenis_cuti' => 'required|in:tahunan,khusus,haid,melahirkan,ayah',
+            'alasan' => 'required|string',
             'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
 
+        $karyawan = auth()->user();
+        $cutiQuota = $karyawan->cutiQuota;
+
+        // Check for pending leave requests
+        $hasPendingLeave = Cuti::where('karyawan_id', $karyawan->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($hasPendingLeave) {
+            return back()
+                ->withInput()
+                ->with('error', 'Anda masih memiliki pengajuan cuti yang pending. Silakan tunggu sampai diproses.');
+        }
+
+        // Check for menstrual leave monthly limit
+        if ($request->jenis_cuti === 'haid') {
+            $hasHaidLeaveThisMonth = Cuti::where('karyawan_id', $karyawan->id)
+                ->where('jenis_cuti', 'haid')
+                ->whereYear('created_at', now()->year)
+                ->whereMonth('created_at', now()->month)
+                ->exists();
+
+            if ($hasHaidLeaveThisMonth) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Anda sudah mengajukan cuti haid untuk bulan ini. Silakan ajukan kembali bulan depan.');
+            }
+
+            // Ensure only female employees can request menstrual leave
+            if ($karyawan->jenis_kelamin !== 'P') {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Hanya karyawan perempuan yang dapat mengajukan cuti haid.');
+            }
+        }
+
+        // Calculate number of days
         $jumlah_hari = Carbon::parse($request->tanggal_mulai)
             ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
 
-        $cuti = new Cuti();
-        $cuti->karyawan_id = auth()->id();
-        $cuti->tanggal_mulai = $request->tanggal_mulai;
-        $cuti->tanggal_selesai = $request->tanggal_selesai;
-        $cuti->jumlah_hari = $jumlah_hari;
-        $cuti->alasan = $request->alasan;
-        $cuti->status = 'pending';
+        $quotaField = 'cuti_' . $request->jenis_cuti;
 
-        if ($request->hasFile('dokumen_pendukung')) {
-            $file = $request->file('dokumen_pendukung');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            // Store directly in the public disk
-            $file->move(public_path('storage/dokumen_pendukung'), $filename);
-            $cuti->dokumen_pendukung = $filename;
+        // Check if employee has enough quota
+        if (!$cutiQuota || $cutiQuota->$quotaField < $jumlah_hari) {
+            return back()
+                ->withInput()
+                ->with('error', "Kuota cuti {$request->jenis_cuti} Anda tidak mencukupi. Sisa kuota: {$cutiQuota->$quotaField} hari.");
         }
 
-        $cuti->save();
+        // Additional validation for specific leave types
+        switch ($request->jenis_cuti) {
+            case 'haid':
+                if ($jumlah_hari > 1) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Cuti haid hanya dapat diambil untuk 1 hari.');
+                }
+                break;
+            case 'melahirkan':
+                if ($jumlah_hari > 90) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Cuti melahirkan maksimal 90 hari.');
+                }
+                break;
+            case 'ayah':
+                if ($jumlah_hari > 30) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Cuti ayah maksimal 30 hari.');
+                }
+                break;
+            case 'tahunan':
+                if ($jumlah_hari > 12) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Cuti tahunan maksimal 12 hari.');
+                }
+                break;
+            case 'khusus':
+                if ($jumlah_hari > 3) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Cuti khusus maksimal 3 hari.');
+                }
+                break;
+        }
 
-        return redirect()->route('karyawan.dashboard')
+        // Additional validation for menstrual leave duration
+        if ($request->jenis_cuti === 'haid' && $jumlah_hari > 1) {
+            return back()
+                ->withInput()
+                ->with('error', 'Cuti haid hanya dapat diambil untuk 1 hari.');
+        }
+
+        // Create cuti request using DB transaction
+        DB::transaction(function () use ($request, $karyawan, $jumlah_hari, $cutiQuota) {
+            // Store the created cuti in a variable
+            $cuti = Cuti::create([
+                'karyawan_id' => $karyawan->id,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'jumlah_hari' => $jumlah_hari,
+                'jenis_cuti' => $request->jenis_cuti,
+                'alasan' => $request->alasan,
+                'status' => 'pending'
+            ]);
+
+            // Handle document upload if exists
+            if ($request->hasFile('dokumen_pendukung')) {
+                $file = $request->file('dokumen_pendukung');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                // Store directly in the public disk
+                $file->move(public_path('storage/dokumen_pendukung'), $filename);
+
+                // Update and save the cuti model with the document
+                $cuti->update(['dokumen_pendukung' => $filename]);
+            }
+
+            // Deduct quota only if cuti is approved
+            if ($cuti->status === 'approved') {
+                $quotaField = 'cuti_' . $request->jenis_cuti;
+                $cutiQuota->$quotaField -= $jumlah_hari;
+                $cutiQuota->save();
+            }
+        });
+
+        return redirect()
+            ->route('karyawan.dashboard')
             ->with('success', 'Pengajuan cuti berhasil disubmit.');
     }
 

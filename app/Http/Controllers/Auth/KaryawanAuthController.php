@@ -48,7 +48,7 @@ class KaryawanAuthController extends Controller
             $request->session()->regenerate();
 
             if (Auth::user()->isAdmin()) {
-                return redirect()->intended('admin/dashboard');
+                return redirect()->intended('/');
             }
             return redirect()->intended('karyawan/dashboard');
         }
@@ -100,7 +100,7 @@ class KaryawanAuthController extends Controller
 
         Auth::login($karyawan);
 
-        return redirect()->intended($karyawan->role === 'admin' ? 'admin/dashboard' : 'karyawan/dashboard');
+        return redirect()->intended($karyawan->role === 'admin' ? '/' : 'karyawan/dashboard');
     }
 
     public function logout(Request $request)

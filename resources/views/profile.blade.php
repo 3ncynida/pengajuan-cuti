@@ -188,7 +188,7 @@
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label for="nama_karyawan" class="form-label">Nama Karyawan:</label>
+                    <label for="nama_karyawan" class="form-label">Nama Karyawan ({{ $karyawan->jenis_kelamin }}):</label>
                     <input type="text" class="form-control @error('nama_karyawan') is-invalid @enderror"
                         name="nama_karyawan" id="nama_karyawan"
                         value="{{ old('nama_karyawan', $karyawan->nama_karyawan) }}" maxlength="25">

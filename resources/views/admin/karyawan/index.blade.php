@@ -346,7 +346,6 @@
     </main>
 @endsection
 
-
 <div class="modal fade" id="addEmailModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -368,26 +367,51 @@
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                            name="email" value="{{ old('email') }}" required>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                            id="email" name="email" value="{{ old('email') }}" required>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
+                        <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                        <select class="form-select @error('jenis_kelamin') is-invalid @enderror" 
+                            id="jenis_kelamin" name="jenis_kelamin" required>
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                        </select>
+                        @error('jenis_kelamin')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label for="jabatan_id" class="form-label">Jabatan</label>
-                        <select class="form-select @error('jabatan_id') is-invalid @enderror" id="jabatan_id"
-                            name="jabatan_id" required>
+                        <select class="form-select @error('jabatan_id') is-invalid @enderror" 
+                            id="jabatan_id" name="jabatan_id" required>
                             <option value="">Pilih Jabatan</option>
                             @foreach ($jabatans as $jabatan)
-                                <option value="{{ $jabatan->id }}"
+                                <option value="{{ $jabatan->id }}" 
                                     {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
                                     {{ $jabatan->nama_jabatan }}
                                 </option>
                             @endforeach
                         </select>
                         @error('jabatan_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select @error('role') is-invalid @enderror" 
+                            id="role" name="role" required>
+                            <option value="karyawan" {{ old('role') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>
+                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        </select>
+                        @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

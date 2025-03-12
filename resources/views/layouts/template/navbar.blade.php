@@ -10,7 +10,7 @@
         <nav id="navmenu" class="navmenu">
             <ul>
                 @if(auth()->user()->isAdmin())
-                <li><a href="{{ route('admin.dashboard') }}" class="{{ Request::is('admin/dashboard', 'admin/cuti/*', 'admin/cuti',) ? 'active' : '' }}">Dashboard</a></li>
+                <li><a href="{{ route('admin.dashboard') }}" class="{{ Request::is('/', 'admin/cuti/*', 'admin/cuti',) ? 'active' : '' }}">Dashboard</a></li>
                     <li><a href="{{ route('admin.karyawan.index') }}" class="{{ Request::is('admin/karyawan', 'admin/karyawan/*') ? 'active' : '' }}">Karyawan</a></li>
                     <li><a href="{{ route('admin.jabatan.index') }}" class="{{ Request::is('admin/jabatan') ? 'active' : '' }}">Jabatan</a></li>
                     <li><a href="{{ route('admin.calendar') }}" class="{{ Request::is('admin/admin/calendar') ? 'active' : '' }}">Kalender</a></li>

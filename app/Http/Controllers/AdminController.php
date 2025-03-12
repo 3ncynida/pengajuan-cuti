@@ -7,6 +7,7 @@ use App\Models\Jabatan;
 use App\Models\Cuti;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -47,56 +48,72 @@ class AdminController extends Controller
         $jabatans = Jabatan::orderBy('nama_jabatan', 'asc')->get();
         return view('admin.karyawan.index', compact('karyawans', 'jabatans'));
     }
-
     public function storeEmail(Request $request)
     {
-        $request->validate(
-            [
-                'nama_karyawan' => ['required', 'string', 'max:25', 'unique:karyawans'],
-                'email' => ['required', 'string', 'email', 'max:25', 'unique:karyawans'],
-                'jabatan_id' => ['required', 'exists:jabatans,id'],
-            ],
-            [
-                'nama_karyawan.unique' => 'Nama karyawan sudah terdaftar, silakan gunakan nama lain!',
-                'email.unique' => 'Email karyawan sudah terdaftar, silakan gunakan email lain!'
-            ]
-        );
-
-        try {
-            $karyawan = Karyawan::create([
-                'nama_karyawan' => $request->nama_karyawan,
-                'email' => $request->email,
-                'jabatan_id' => $request->jabatan_id,
-                'is_verified' => true,
-                'role' => 'karyawan',
-                'password' => null
-            ]);
-
-            return redirect()->back()->with('success', 'Email karyawan berhasil didaftarkan.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors([
-                'email' => 'Gagal mendaftarkan email: ' . $e->getMessage(),
-                'nama_karyawan' => 'Gagal mendaftarkan email: ' . $e->getMessage()
-            ])->withInput();
-        }
+        $request->validate([
+            'nama_karyawan' => 'required|string|max:255',
+            'email' => 'required|email|unique:karyawans,email',
+            'jenis_kelamin' => 'required|in:L,P',
+            'jabatan_id' => 'required|exists:jabatans,id',
+            'role' => 'required|in:karyawan,admin'
+        ]);
+    
+        $karyawan = Karyawan::create([
+            'nama_karyawan' => $request->nama_karyawan,
+            'email' => $request->email,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'jabatan_id' => $request->jabatan_id,
+            'role' => $request->role
+        ]);
+    
+        // Initialize cuti quota
+        $karyawan->cutiQuota()->create([
+            'tahun' => now()->year,
+            'cuti_tahunan' => 12,
+            'cuti_khusus' => 3,
+            'cuti_haid' => $karyawan->jenis_kelamin === 'P' ? 1 : 0,
+            'cuti_melahirkan' => $karyawan->jenis_kelamin === 'P' ? 90 : 0,
+            'cuti_ayah' => $karyawan->jenis_kelamin === 'L' ? 30 : 0,
+        ]);
+    
+        return redirect()->back()->with('success', 'Karyawan baru berhasil ditambahkan');
     }
     public function updateKaryawan(Request $request, Karyawan $karyawan)
     {
         if ($karyawan->id === auth()->id()) {
             return redirect()->back()->with('error', 'Tidak dapat mengubah akun sendiri.');
         }
-
+    
         $request->validate([
             'role' => ['required', 'in:admin,karyawan'],
-            'jabatan_id' => ['required', 'exists:jabatans,id']
+            'jabatan_id' => ['required', 'exists:jabatans,id'],
+            'jenis_kelamin' => ['required', 'in:L,P']
         ]);
-
-        $karyawan->update([
-            'is_verified' => $request->has('is_verified'),
-            'role' => $request->role,
-            'jabatan_id' => $request->jabatan_id
-        ]);
-
+    
+        DB::transaction(function() use ($request, $karyawan) {
+            // Update karyawan data
+            $oldGender = $karyawan->jenis_kelamin;
+            
+            $karyawan->update([
+                'is_verified' => $request->has('is_verified'),
+                'role' => $request->role,
+                'jabatan_id' => $request->jabatan_id,
+                'jenis_kelamin' => $request->jenis_kelamin
+            ]);
+    
+            // Update cuti quota if gender changed
+            if ($oldGender !== $request->jenis_kelamin) {
+                $cutiQuota = $karyawan->cutiQuota;
+                if ($cutiQuota) {
+                    $cutiQuota->update([
+                        'cuti_haid' => $request->jenis_kelamin === 'P' ? 1 : 0,
+                        'cuti_melahirkan' => $request->jenis_kelamin === 'P' ? 90 : 0,
+                        'cuti_ayah' => $request->jenis_kelamin === 'L' ? 30 : 0
+                    ]);
+                }
+            }
+        });
+    
         return redirect()->back()->with('success', 'Karyawan berhasil diupdate');
     }
 
@@ -163,19 +180,33 @@ class AdminController extends Controller
     }
 
     public function cutiApprove(Request $request, Cuti $cuti)
-    {
-        $request->validate([
-            'keterangan_status' => 'nullable|string|max:255'
-        ]);
+{
+    $request->validate([
+        'keterangan_status' => 'nullable|string|max:255'
+    ]);
 
+    DB::transaction(function() use ($request, $cuti) {
+        // Update cuti status
         $cuti->update([
             'status' => 'approved',
             'keterangan_status' => $request->keterangan_status
         ]);
 
-        return redirect()->route('admin.cuti.index')
-            ->with('success', 'Pengajuan cuti berhasil disetujui');
-    }
+        // Deduct quota when approved
+        $karyawan = $cuti->karyawan;
+        $cutiQuota = $karyawan->cutiQuota;
+        $quotaField = 'cuti_' . $cuti->jenis_cuti;
+        
+        if ($cutiQuota) {
+            $cutiQuota->$quotaField -= $cuti->jumlah_hari;
+            $cutiQuota->save();
+        }
+    });
+
+    return redirect()
+        ->route('admin.dashboard')
+        ->with('success', 'Pengajuan cuti berhasil disetujui');
+}
 
     public function cutiReject(Request $request, Cuti $cuti)
     {

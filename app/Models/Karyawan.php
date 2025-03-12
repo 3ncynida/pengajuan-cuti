@@ -17,6 +17,7 @@ class Karyawan extends Authenticatable
      */
     protected $fillable = [
         'nama_karyawan',
+        'jenis_kelamin',
         'email',
         'nohp',
         'jabatan_id',
@@ -73,5 +74,10 @@ class Karyawan extends Authenticatable
     public function cutis()
 {
     return $this->hasMany(Cuti::class, 'karyawan_id');
+}
+
+public function cutiQuota()
+{
+    return $this->hasOne(CutiQuota::class)->where('tahun', now()->year);
 }
 }

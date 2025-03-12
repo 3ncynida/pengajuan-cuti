@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('karyawans', function (Blueprint $table) {
             $table->id();
             $table->string('nama_karyawan', 25)->nullable();
+            $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('email', 25)->unique();
             $table->string('nohp', 20)->nullable()->unique();
             $table->foreignId('jabatan_id')->nullable()->constrained('jabatans');

@@ -13,6 +13,7 @@ class Cuti extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'jumlah_hari',
+        'jenis_cuti', // Make sure this is included
         'alasan',
         'status',
         'keterangan_status',

@@ -261,6 +261,16 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="info-card">
+                                <div class="info-label">Jenis Kelamin</div>
+                                <div class="info-value">
+                                    <span class="badge bg-{{$karyawan->jenis_kelamin === 'L' ? 'primary' : 'danger'}}">
+                                        {{ $karyawan->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card">
                                 <div class="info-label">Status Akun</div>
                                 <div class="info-value">
                                     <span class="badge {{ $karyawan->is_verified ? 'bg-success' : 'bg-danger' }}">
@@ -341,6 +351,18 @@
                                    {{ $karyawan->is_verified ? 'checked' : '' }}>
                             <label class="form-check-label">Verified</label>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Kelamin</label>
+                        <select class="form-select" name="jenis_kelamin" required>
+                            <option value="L" {{ $karyawan->jenis_kelamin === 'L' ? 'selected' : '' }}>
+                                Laki-laki
+                            </option>
+                            <option value="P" {{ $karyawan->jenis_kelamin === 'P' ? 'selected' : '' }}>
+                                Perempuan
+                            </option>
+                        </select>
                     </div>
 
                     <div class="mb-3">

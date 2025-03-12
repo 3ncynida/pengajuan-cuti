@@ -14,6 +14,10 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect()->route('access.denied');
+        if (Auth::check() && Auth::user()->role === 'karyawan') {
+            return redirect()->route('karyawan.dashboard');
+        }
+        
+        return redirect()->route('login');
     }
 }

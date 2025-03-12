@@ -275,11 +275,27 @@
                                 <div class="info-item">
                                     <strong>Jabatan:</strong> {{ $cuti->karyawan->jabatan->nama_jabatan }}
                                 </div>
+                                <div class="info-item">
+                                    <strong>Kelamin:</strong>  {{ $cuti->karyawan->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="info-group">
                                 <h5><i class="bi bi-calendar-event"></i> Detail Cuti</h5>
+                                <div class="info-item">
+                                    <strong>Jenis Cuti:</strong> 
+                                    @php
+                                        $jenisLabels = [
+                                            'tahunan' => 'Cuti Tahunan',
+                                            'khusus' => 'Cuti Khusus',
+                                            'haid' => 'Cuti Haid',
+                                            'melahirkan' => 'Cuti Melahirkan',
+                                            'ayah' => 'Cuti Ayah'
+                                        ];
+                                    @endphp
+                                    {{ $jenisLabels[$cuti->jenis_cuti] }}
+                                </div>
                                 <div class="info-item">
                                     <strong>Tanggal Mulai:</strong>
                                     {{ \Carbon\Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y') }}
@@ -352,7 +368,7 @@
                     @endif
 
                     <div class="mt-4">
-                        <a href="{{ route('admin.cuti.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Kembali
                         </a>
                     </div>

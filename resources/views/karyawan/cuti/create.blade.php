@@ -189,6 +189,46 @@
                                     @enderror
                                 </div>
 
+
+                                <div class="mb-4">
+                                    <label for="jenis_cuti" class="form-label">Jenis Cuti</label>
+                                    <select class="form-select @error('jenis_cuti') is-invalid @enderror" id="jenis_cuti"
+                                        name="jenis_cuti" required>
+                                        <option value="">Pilih Jenis Cuti</option>
+
+                                        <!-- Annual Leave -->
+                                        <option value="tahunan" {{ old('jenis_cuti') == 'tahunan' ? 'selected' : '' }}>
+                                            Cuti Tahunan (Sisa: {{ $cutiQuota->cuti_tahunan }} hari)
+                                        </option>
+
+                                        <!-- Special Leave -->
+                                        <option value="khusus" {{ old('jenis_cuti') == 'khusus' ? 'selected' : '' }}>
+                                            Cuti Khusus (Sisa: {{ $cutiQuota->cuti_khusus }} hari)
+                                        </option>
+
+                                        <!-- Female-specific leaves -->
+                                        @if (auth()->user()->jenis_kelamin === 'P')
+                                            <option value="haid" {{ old('jenis_cuti') == 'haid' ? 'selected' : '' }}>
+                                                Cuti Haid (Sisa: {{ $cutiQuota->cuti_haid }} hari)
+                                            </option>
+                                            <option value="melahirkan"
+                                                {{ old('jenis_cuti') == 'melahirkan' ? 'selected' : '' }}>
+                                                Cuti Melahirkan (Sisa: {{ $cutiQuota->cuti_melahirkan }} hari)
+                                            </option>
+                                        @endif
+
+                                        <!-- Male-specific leave -->
+                                        @if (auth()->user()->jenis_kelamin === 'L')
+                                            <option value="ayah" {{ old('jenis_cuti') == 'ayah' ? 'selected' : '' }}>
+                                                Cuti Ayah (Sisa: {{ $cutiQuota->cuti_ayah }} hari)
+                                            </option>
+                                        @endif
+                                    </select>
+                                    @error('jenis_cuti')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 <div class="mb-4">
                                     <label for="alasan" class="form-label">Alasan Cuti</label>
                                     <textarea class="form-control @error('alasan') is-invalid @enderror" id="alasan" name="alasan" rows="4"
@@ -240,6 +280,12 @@
                 minDate: "today",
                 dateFormat: "Y-m-d"
             });
+        });
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Log form data before submission
+            const formData = new FormData(this);
+            console.log('Submitting form with jenis_cuti:', formData.get('jenis_cuti'));
         });
     </script>
 @endpush

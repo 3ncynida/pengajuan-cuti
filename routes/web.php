@@ -10,15 +10,15 @@ use App\Http\Controllers\Auth\KaryawanAuthController;
 use App\Http\Middleware\{AdminMiddleware, KaryawanMiddleware};
 
 // Welcome Route
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 // Guest Routes
 Route::middleware('guest')->group(function () {
     // Authentication Routes
     Route::controller(KaryawanAuthController::class)->group(function () {
-        Route::get('/', 'showLoginForm')->name('login');
+        Route::get('/login', 'showLoginForm')->name('login');
         Route::post('login', 'login')->name('login.post');
         Route::get('register', 'showRegisterForm')->name('register');
         Route::post('register', 'register')->name('register.post');
@@ -37,19 +37,23 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+//root route
+$router->aliasMiddleware('AdminMiddleware', AdminMiddleware::class);
+Route::get('/', [AdminController::class, 'dashboard'])
+    ->middleware('AdminMiddleware')
+    ->name('admin.dashboard');
+
 // Admin Routes
 Route::middleware(['auth', AdminMiddleware::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         // Dashboard
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
         Route::get('/admin/calendar', [AdminController::class, 'calendar'])->name('calendar');
 
         // Cuti Management
         Route::controller(AdminController::class)->prefix('cuti')->name('cuti.')->group(function () {
-            Route::get('/', 'dashboard')->name('index');
             Route::get('/{cuti}', 'cutiShow')->name('show');
             Route::post('/{cuti}/approve', 'cutiApprove')->name('approve');
             Route::post('/{cuti}/reject', 'cutiReject')->name('reject');
