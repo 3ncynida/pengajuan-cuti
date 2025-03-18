@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-//root route
+//Root Route
 $router->aliasMiddleware('AdminMiddleware', AdminMiddleware::class);
 Route::get('/', [AdminController::class, 'dashboard'])
     ->middleware('AdminMiddleware')

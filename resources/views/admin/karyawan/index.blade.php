@@ -96,7 +96,6 @@
         }
 
         .table tbody tr:hover {
-            background-color: var(--primary-light);
             transform: translateY(-1px);
         }
 

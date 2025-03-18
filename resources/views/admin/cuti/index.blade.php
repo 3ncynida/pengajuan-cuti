@@ -146,7 +146,7 @@
         }
 
         .table tbody tr:hover {
-            background-color: var(--primary-light);
+            background-color: var(--secondary-main);
             transform: translateY(-1px);
         }
 

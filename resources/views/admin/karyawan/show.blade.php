@@ -225,7 +225,7 @@
                         <i class="bi bi-pencil"></i> Edit
                     </button>
                     <button type="button" class="btn btn-danger" onclick="deleteKaryawan({{ $karyawan->id }})">
-                        <i class="bi bi-trash"></i> Delete
+                        <i class="bi bi-trash"></i> Hapus
                     </button>
                 </div>
                 @endif
@@ -263,7 +263,7 @@
                             <div class="info-card">
                                 <div class="info-label">Jenis Kelamin</div>
                                 <div class="info-value">
-                                    <span class="badge bg-{{$karyawan->jenis_kelamin === 'L' ? 'primary' : 'danger'}}">
+                                    <span >
                                         {{ $karyawan->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
                                     </span>
                                 </div>
@@ -390,8 +390,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
         </div>

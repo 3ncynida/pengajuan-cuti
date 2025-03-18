@@ -224,52 +224,54 @@ class AdminController extends Controller
     }
 
     public function calendar()
-{
-    $cutis = Cuti::with('karyawan')->get();
-
-    $events = $cutis->map(function ($cuti) {
-        $statusColor = [
-            'pending' => '#ffc107',
-            'approved' => '#198754',
-            'rejected' => '#dc3545'
-        ];
-
-        $statusLabel = [
-            'pending' => 'Menunggu',
-            'approved' => 'Disetujui',
-            'rejected' => 'Ditolak'
-        ];
-
-        $jenisCutiLabel = [
-            'tahunan' => 'Cuti Tahunan',
-            'khusus' => 'Cuti Khusus',
-            'haid' => 'Cuti Haid',
-            'melahirkan' => 'Cuti Melahirkan',
-            'ayah' => 'Cuti Ayah'
-        ];
-
-        return [
-            'title' => sprintf(
-                '%s - %s (%s)',
-                $cuti->karyawan->nama_karyawan,
-                $jenisCutiLabel[$cuti->jenis_cuti],
-                $statusLabel[$cuti->status]
-            ),
-            'start' => $cuti->tanggal_mulai,
-            'end' => Carbon::parse($cuti->tanggal_selesai)->addDay()->format('Y-m-d'),
-            'backgroundColor' => $statusColor[$cuti->status],
-            'borderColor' => $statusColor[$cuti->status],
-            'extendedProps' => [
-                'karyawan' => $cuti->karyawan->nama_karyawan,
-                'jenis_cuti' => $cuti->jenis_cuti,
-                'jenis_cuti_label' => $jenisCutiLabel[$cuti->jenis_cuti],
-                'startDate' => Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y'),
-                'endDate' => Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y'),
-                'status' => $statusLabel[$cuti->status]
-            ]
-        ];
-    });
-
-    return view('admin.calendar', compact('events'));
-}
+    {
+        $cutis = Cuti::with('karyawan')->get();
+    
+        $events = $cutis->map(function ($cuti) {
+            $statusColor = [
+                'pending' => '#ffc107',
+                'approved' => '#198754',
+                'rejected' => '#dc3545'
+            ];
+    
+            $statusLabel = [
+                'pending' => 'Menunggu',
+                'approved' => 'Disetujui',
+                'rejected' => 'Ditolak'
+            ];
+    
+            $jenisCutiLabel = [
+                'tahunan' => 'Cuti Tahunan',
+                'khusus' => 'Cuti Khusus',
+                'haid' => 'Cuti Haid',
+                'melahirkan' => 'Cuti Melahirkan',
+                'ayah' => 'Cuti Ayah'
+            ];
+    
+            return [
+                'title' => sprintf(
+                    '%s - %s (%s)',
+                    $cuti->karyawan->nama_karyawan,
+                    $jenisCutiLabel[$cuti->jenis_cuti],
+                    $statusLabel[$cuti->status]
+                ),
+                'start' => $cuti->tanggal_mulai,
+                'end' => Carbon::parse($cuti->tanggal_selesai)->addDay()->format('Y-m-d'),
+                'allDay' => true, // Add this to remove time
+                'backgroundColor' => $statusColor[$cuti->status],
+                'borderColor' => $statusColor[$cuti->status],
+                'extendedProps' => [
+                    'karyawan' => $cuti->karyawan->nama_karyawan,
+                    'jenis_cuti' => $cuti->jenis_cuti,
+                    'jenis_cuti_label' => $jenisCutiLabel[$cuti->jenis_cuti],
+                    'startDate' => Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y'),
+                    'endDate' => Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y'),
+                    'status' => $statusLabel[$cuti->status],
+                    'detailUrl' => route('admin.cuti.show', $cuti->id) // Change url to detailUrl
+                ]
+            ];
+        });
+    
+        return view('admin.calendar', compact('events'));
+    }
 }

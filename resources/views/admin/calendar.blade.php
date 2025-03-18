@@ -1,4 +1,4 @@
-<!-- filepath: /C:/laragon/www/pengajuan-cuti/resources/views/admin/calendar.blade.php -->
+
 @extends('layouts.template.app')
 
 @section('title', 'Kalender Cuti')
@@ -182,6 +182,7 @@
                 </div>
                 <div class="modal-body">
                     <p><strong>Karyawan:</strong> <span id="modalKaryawan"></span></p>
+                    <p><strong>Jenis Cuti:</strong> <span id="modalJenisCuti"></span></p>
                     <p><strong>Tanggal Mulai:</strong> <span id="modalStart"></span></p>
                     <p><strong>Tanggal Selesai:</strong> <span id="modalEnd"></span></p>
                     <p><strong>Status:</strong> <span id="modalStatus"></span></p>
@@ -202,6 +203,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'id',
@@ -217,25 +220,29 @@
             },
             events: @json($events),
             eventDidMount: function(info) {
-                // Add status-based class
                 info.el.classList.add(info.event.extendedProps.status.toLowerCase());
             },
             eventClick: function(info) {
-                var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                // Update modal content
                 document.getElementById('modalKaryawan').textContent = info.event.extendedProps.karyawan;
+                document.getElementById('modalJenisCuti').textContent = info.event.extendedProps.jenis_cuti_label;
                 document.getElementById('modalStart').textContent = info.event.extendedProps.startDate;
                 document.getElementById('modalEnd').textContent = info.event.extendedProps.endDate;
                 document.getElementById('modalStatus').textContent = info.event.extendedProps.status;
-                document.getElementById('modalViewLink').href = info.event.extendedProps.url;
-                modal.show();
+                
+                // Update detail link
+                var viewLink = document.getElementById('modalViewLink');
+                if (viewLink) {
+                    viewLink.href = info.event.extendedProps.detailUrl;
+                }
+
+                // Show modal
+                eventModal.show();
             },
-            eventTimeFormat: {
-                hour: 'numeric',
-                minute: '2-digit',
-                meridiem: false,
-                hour12: false
-            }
+            displayEventTime: false,
+            allDay: true
         });
+
         calendar.render();
     });
 </script>
