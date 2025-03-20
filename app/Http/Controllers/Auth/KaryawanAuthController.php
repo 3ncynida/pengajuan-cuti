@@ -22,37 +22,31 @@ class KaryawanAuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-
+    
         // First, check if the user exists
         $karyawan = Karyawan::where('email', $request->email)->first();
-
+    
         if (!$karyawan) {
             return back()->withErrors([
                 'email' => 'Email tidak terdaftar dalam sistem.',
             ])->withInput();
         }
-
-        if (!$karyawan->is_verified) {
-            return back()->withErrors([
-                'email' => 'Email tidak terverifikasi oleh admin.',
-            ])->withInput();
-        }
-
+    
         if (!$karyawan->password) {
             return back()->withErrors([
                 'email' => 'Silahkan melakukan registrasi terlebih dahulu.',
             ])->withInput();
         }
-
+    
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
+    
             if (Auth::user()->isAdmin()) {
                 return redirect()->intended('/');
             }
             return redirect()->intended('karyawan/dashboard');
         }
-
+    
         return back()->withErrors([
             'password' => 'Password yang Anda masukkan salah.',
         ])->withInput();
@@ -78,12 +72,6 @@ class KaryawanAuthController extends Controller
         if (!$karyawan) {
             return back()->withErrors([
                 'email' => 'Email tidak terdaftar dalam sistem.',
-            ])->withInput();
-        }
-
-        if (!$karyawan->is_verified) {
-            return back()->withErrors([
-                'email' => 'Email belum diverifikasi oleh admin.',
             ])->withInput();
         }
 

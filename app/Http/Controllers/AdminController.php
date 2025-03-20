@@ -95,7 +95,6 @@ class AdminController extends Controller
             $oldGender = $karyawan->jenis_kelamin;
             
             $karyawan->update([
-                'is_verified' => $request->has('is_verified'),
                 'role' => $request->role,
                 'jabatan_id' => $request->jabatan_id,
                 'jenis_kelamin' => $request->jenis_kelamin

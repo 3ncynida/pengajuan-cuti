@@ -271,16 +271,6 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="info-card">
-                                <div class="info-label">Status Akun</div>
-                                <div class="info-value">
-                                    <span class="badge {{ $karyawan->is_verified ? 'bg-success' : 'bg-danger' }}">
-                                        {{ $karyawan->is_verified ? 'Verified' : 'Unverified' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="info-card">
                                 <div class="info-label">Role</div>
                                 <div class="info-value">
                                     <span class="badge bg-{{ $karyawan->role === 'admin' ? 'danger' : 'info' }}">
@@ -341,18 +331,6 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Status Verifikasi</label>
-                        <div class="form-check">
-                            <input type="checkbox" 
-                                   class="form-check-input" 
-                                   name="is_verified" 
-                                   id="verify"
-                                   {{ $karyawan->is_verified ? 'checked' : '' }}>
-                            <label class="form-check-label">Verified</label>
-                        </div>
-                    </div>
-
                     <div class="mb-3">
                         <label class="form-label">Jenis Kelamin</label>
                         <select class="form-select" name="jenis_kelamin" required>

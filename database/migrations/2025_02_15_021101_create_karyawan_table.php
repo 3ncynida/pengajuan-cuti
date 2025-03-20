@@ -21,7 +21,6 @@ return new class extends Migration
             $table->foreignId('jabatan_id')->nullable()->constrained('jabatans');
             $table->enum('role', ['admin', 'karyawan'])->default('karyawan');
             $table->string('password')->nullable();;
-            $table->boolean('is_verified')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

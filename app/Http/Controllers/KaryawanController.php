@@ -85,11 +85,6 @@ class KaryawanController extends Controller
         $karyawan = auth()->user();
         $cutiQuota = $karyawan->cutiQuota;
 
-        \Log::info('Create Form Data:', [
-            'karyawan' => $karyawan->only(['id', 'nama_karyawan', 'jenis_kelamin']),
-            'cutiQuota' => $cutiQuota
-        ]);
-
         return view('karyawan.cuti.create', compact('cutiQuota'));
     }
 

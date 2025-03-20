@@ -3,7 +3,7 @@
 @section('title', 'Daftar Karyawan')
 
 @push('css')
-    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
@@ -194,22 +194,28 @@
         /* DataTable Styling */
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_filter input {
-            border-radius: 8px;
-            padding: 8px 12px;
-            border-color: #e0e8f9;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            border: 1px solid #dee2e6;
         }
 
         .dataTables_wrapper .dataTables_length select:focus,
         .dataTables_wrapper .dataTables_filter input:focus {
             border-color: var(--primary-main);
-            box-shadow: none;
-            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: var(--primary-main);
-            border-color: var(--primary-main);
-            color: #fff !important;
+            background: var(--primary-main) !important;
+            border-color: var(--primary-main) !important;
+            color: white !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--primary-light) !important;
+            border-color: var(--primary-main) !important;
+            color: var(--primary-main) !important;
         }
 
         .alert {
@@ -301,7 +307,6 @@
                                     <th style="width: 20%">Nama</th>
                                     <th style="width: 25%">Email</th>
                                     <th style="width: 15%">Jabatan</th>
-                                    <th style="width: 12%">Status</th>
                                     <th style="width: 10%">Role</th>
                                     <th style="width: 13%">Aksi</th>
                                 </tr>
@@ -313,12 +318,6 @@
                                         <td>{{ $karyawan->nama_karyawan ?? 'Belum diisi' }}</td>
                                         <td>{{ $karyawan->email }}</td>
                                         <td>{{ $karyawan->jabatan->nama_jabatan ?? 'Belum diset' }}</td>
-                                        <td>
-                                            <span
-                                                class="badge {{ $karyawan->is_verified ? 'badge-verified' : 'badge-unverified' }}">
-                                                {{ $karyawan->is_verified ? 'Verified' : 'Unverified' }}
-                                            </span>
-                                        </td>
                                         <td>
                                             <span class="badge bg-{{ $karyawan->role === 'admin' ? 'danger' : 'info' }}">
                                                 {{ ucfirst($karyawan->role) }}
@@ -425,6 +424,7 @@
 </div>
 
 @push('scripts')
+    <!-- DataTables Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -433,26 +433,22 @@
         $(document).ready(function() {
             $('#karyawanTable').DataTable({
                 language: {
-                    lengthMenu: "Tampilkan _MENU_ data per halaman",
-                    zeroRecords: "Tidak ada data yang ditemukan",
-                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                    infoEmpty: "Tidak ada data yang tersedia",
-                    infoFiltered: "(difilter dari _MAX_ total data)",
-                    search: "Cari:",
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "Selanjutnya",
-                        previous: "Sebelumnya"
-                    }
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
                 },
                 pageLength: 10,
                 ordering: false,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                order: [],
                 responsive: true,
-                columnDefs: [{
-                    orderable: false,
-                    targets: [0, 6]
-                }]
+                columnDefs: [
+                    { orderable: false, targets: [0, 5] }, // No sorting on first and action columns
+                    { searchable: false, targets: [0, 5] } // No searching on first and action columns
+                ],
+                initComplete: function() {
+                    // Add margin to the search input
+                    $('.dataTables_filter input').addClass('form-control-sm');
+                    $('.dataTables_length select').addClass('form-control-sm');
+                }
             });
         });
 
