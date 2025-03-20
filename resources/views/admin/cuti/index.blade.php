@@ -310,7 +310,7 @@
                                         <i class='bi bi-check-circle stat-icon text-success'></i>
                                         <div>
                                             <h3 class="mb-0">{{ $totalCutiApproved }}</h3>
-                                            <p class="text-muted mb-0">Approved Cuti (perbulan)</p>
+                                            <p class="text-muted mb-0">Approved Cuti (bulan ini)</p>
                                         </div>
                                     </div>
                                 </div>
