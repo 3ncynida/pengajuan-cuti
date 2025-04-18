@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class ResetAnnualLeaveQuota extends Command
 {
     protected $signature = 'leave:reset-annual';
-    protected $description = 'Reset annual leave quotas on the first day of each year';
+    protected $description = 'Reset annual leave quotas on January 1st';
 
     public function handle()
     {
@@ -19,14 +20,12 @@ class ResetAnnualLeaveQuota extends Command
         DB::transaction(function() {
             $currentYear = Carbon::now()->year;
             
-            // Get all employees
             $karyawans = Karyawan::all();
             
             foreach ($karyawans as $karyawan) {
-                // Find or create quota for current year
-                $cutiQuota = CutiQuota::updateOrCreate(
+                CutiQuota::updateOrCreate(
                     [
-                        'karyawan_id' => $karyawan->id,
+                        'karyawan_id' => $karyawan->karyawan_id,
                         'tahun' => $currentYear
                     ],
                     [
@@ -34,14 +33,12 @@ class ResetAnnualLeaveQuota extends Command
                         'cuti_khusus' => 3,
                         'cuti_haid' => $karyawan->jenis_kelamin === 'P' ? 1 : 0,
                         'cuti_melahirkan' => $karyawan->jenis_kelamin === 'P' ? 90 : 0,
-                        'cuti_ayah' => $karyawan->jenis_kelamin === 'L' ? 30 : 0
+                        'cuti_ayah' => $karyawan->jenis_kelamin === 'L' ? 30 : 0,
                     ]
                 );
-                
-                $this->info("Reset quota for {$karyawan->nama_karyawan} successful.");
             }
         });
 
-        $this->info('All annual leave quotas have been reset successfully.');
+        $this->info('Annual leave quotas have been reset successfully!');
     }
 }

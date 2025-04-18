@@ -219,12 +219,12 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title">Detail Karyawan</h5>
-                @if(auth()->id() !== $karyawan->id)
+                @if(auth()->id() !== $karyawan->karyawan_id)
                 <div>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">
                         <i class="bi bi-pencil"></i> Edit
                     </button>
-                    <button type="button" class="btn btn-danger" onclick="deleteKaryawan({{ $karyawan->id }})">
+                    <button type="button" class="btn btn-danger" onclick="deleteKaryawan({{ $karyawan->karyawan_id }})">
                         <i class="bi bi-trash"></i> Hapus
                     </button>
                 </div>
@@ -327,7 +327,7 @@
                 <h5 class="modal-title">Edit Karyawan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('admin.update-karyawan', $karyawan->id) }}" method="POST">
+            <form action="{{ route('admin.update-karyawan', $karyawan->karyawan_id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -359,8 +359,8 @@
                         <label class="form-label">Jabatan</label>
                         <select class="form-select" name="jabatan_id" required>
                             @foreach($jabatans as $jabatan)
-                                <option value="{{ $jabatan->id }}" 
-                                    {{ $karyawan->jabatan_id == $jabatan->id ? 'selected' : '' }}>
+                                <option value="{{ $jabatan->jabatan_id }}" 
+                                    {{ $karyawan->jabatan_id == $jabatan->jabatan_id ? 'selected' : '' }}>
                                     {{ $jabatan->nama_jabatan }}
                                 </option>
                             @endforeach
@@ -375,24 +375,32 @@
         </div>
     </div>
 </div>
-
-    <script>
-        function deleteKaryawan(id) {
-            if(confirm('Apakah Anda yakin ingin menghapus karyawan ini?')) {
-                fetch(`/admin/karyawan/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.href = '{{ route("admin.karyawan.index") }}';
-                    }
-                });
-            }
+<script>
+    function deleteKaryawan(karyawan_id) {
+        if (confirm('Apakah Anda yakin ingin menghapus karyawan ini?')) {
+            fetch(`/admin/karyawan/${karyawan_id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{{ route("admin.karyawan.index") }}';
+                } else {
+                    alert(data.error || 'Gagal menghapus karyawan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus karyawan');
+            });
         }
-    </script>
+    }
+</script>
  </section>
 </main>
 @endsection

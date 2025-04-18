@@ -9,13 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cuti_quotas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('karyawan_id')->constrained('karyawans')->onDelete('cascade');
-            $table->integer('cuti_tahunan')->default(12); // 12 days per year
-            $table->integer('cuti_khusus')->default(3);   // 3 days per year
-            $table->integer('cuti_haid')->default(12);    // 1 day per month (12/year)
-            $table->integer('cuti_melahirkan')->default(90); // 3 months
-            $table->integer('cuti_ayah')->default(30);    // 1 month
+            $table->id('kuotacuti_id');  // Mengubah primary key
+            $table->foreignId('karyawan_id')->constrained('karyawans', 'karyawan_id')->onDelete('cascade');
+            $table->integer('cuti_tahunan')->default(12);
+            $table->integer('cuti_khusus')->default(3);
+            $table->integer('cuti_haid')->default(12);
+            $table->integer('cuti_melahirkan')->default(90);
+            $table->integer('cuti_ayah')->default(30);
             $table->year('tahun');
             $table->timestamps();
         });

@@ -12,14 +12,14 @@ class KaryawanController extends Controller
     public function dashboard()
     {
         $karyawan = auth()->user();
-        $totalCuti = Cuti::where('karyawan_id', $karyawan->id)->count();
-        $approvedCuti = Cuti::where('karyawan_id', $karyawan->id)
+        $totalCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)->count();
+        $approvedCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
             ->where('status', 'approved')
             ->count();
-        $pendingCuti = Cuti::where('karyawan_id', $karyawan->id)
+        $pendingCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
             ->where('status', 'pending')
             ->count();
-        $recentCuti = Cuti::where('karyawan_id', $karyawan->id)
+        $recentCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
             ->latest()
             ->get();
 
@@ -32,53 +32,54 @@ class KaryawanController extends Controller
     }
 
     public function calendar()
-{
-    $cutis = Cuti::with('karyawan')->get();
-
-    $events = $cutis->map(function ($cuti) {
-        $statusColor = [
-            'pending' => '#ffc107',
-            'approved' => '#198754',
-            'rejected' => '#dc3545'
-        ];
-
-        $statusLabel = [
-            'pending' => 'Menunggu',
-            'approved' => 'Disetujui',
-            'rejected' => 'Ditolak'
-        ];
-
-        $jenisCutiLabel = [
-            'tahunan' => 'Cuti Tahunan',
-            'khusus' => 'Cuti Khusus',
-            'haid' => 'Cuti Haid',
-            'melahirkan' => 'Cuti Melahirkan',
-            'ayah' => 'Cuti Ayah'
-        ];
-
-        return [
-            'title' => sprintf(
-                '%s - %s (%s)',
-                $cuti->karyawan->nama_karyawan,
-                $jenisCutiLabel[$cuti->jenis_cuti],
-                $statusLabel[$cuti->status]
-            ),
-            'start' => $cuti->tanggal_mulai,
-            'end' => Carbon::parse($cuti->tanggal_selesai)->addDay()->format('Y-m-d'),
-            'backgroundColor' => $statusColor[$cuti->status],
-            'borderColor' => $statusColor[$cuti->status],
-            'extendedProps' => [
-                'karyawan' => $cuti->karyawan->nama_karyawan,
-                'jenis_cuti' => $jenisCutiLabel[$cuti->jenis_cuti],
-                'startDate' => Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y'),
-                'endDate' => Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y'),
-                'status' => $statusLabel[$cuti->status]
-            ]
-        ];
-    });
-
-    return view('karyawan.calendar', compact('events'));
-}
+    {
+        $cutis = Cuti::with('karyawan')->get();
+    
+        $events = $cutis->map(function ($cuti) {
+            $statusColor = [
+                'pending' => '#ffc107',
+                'approved' => '#198754',
+                'rejected' => '#dc3545'
+            ];
+    
+            $statusLabel = [
+                'pending' => 'Menunggu',
+                'approved' => 'Disetujui',
+                'rejected' => 'Ditolak'
+            ];
+    
+            $jenisCutiLabel = [
+                'tahunan' => 'Cuti Tahunan',
+                'khusus' => 'Cuti Khusus',
+                'haid' => 'Cuti Haid',
+                'melahirkan' => 'Cuti Melahirkan',
+                'ayah' => 'Cuti Ayah'
+            ];
+    
+            return [
+                'title' => sprintf(
+                    '%s - %s (%s)',
+                    $cuti->karyawan->nama_karyawan,
+                    $jenisCutiLabel[$cuti->jenis_cuti],
+                    $statusLabel[$cuti->status]
+                ),
+                'start' => $cuti->tanggal_mulai,
+                'end' => Carbon::parse($cuti->tanggal_selesai)->addDay()->format('Y-m-d'),
+                'backgroundColor' => $statusColor[$cuti->status],
+                'borderColor' => $statusColor[$cuti->status],
+                'extendedProps' => [
+                    'karyawan' => $cuti->karyawan->nama_karyawan,
+                    'jenis_cuti' => $cuti->jenis_cuti,
+                    'jenis_cuti_label' => $jenisCutiLabel[$cuti->jenis_cuti],
+                    'startDate' => Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y'),
+                    'endDate' => Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y'),
+                    'status' => $statusLabel[$cuti->status]
+                ]
+            ];
+        });
+    
+        return view('karyawan.calendar', compact('events'));
+    }
 
     public function create()
     {
@@ -103,7 +104,7 @@ class KaryawanController extends Controller
         $cutiQuota = $karyawan->cutiQuota;
 
         // Check for pending leave requests
-        $hasPendingLeave = Cuti::where('karyawan_id', $karyawan->id)
+        $hasPendingLeave = Cuti::where('karyawan_id', $karyawan->karyawan_id)
             ->where('status', 'pending')
             ->exists();
 
@@ -115,7 +116,7 @@ class KaryawanController extends Controller
 
         // Check for menstrual leave monthly limit
         if ($request->jenis_cuti === 'haid') {
-            $hasHaidLeaveThisMonth = Cuti::where('karyawan_id', $karyawan->id)
+            $hasHaidLeaveThisMonth = Cuti::where('karyawan_id', $karyawan->karyawan_id)
                 ->where('jenis_cuti', 'haid')
                 ->whereYear('created_at', now()->year)
                 ->whereMonth('created_at', now()->month)
@@ -198,7 +199,7 @@ class KaryawanController extends Controller
         DB::transaction(function () use ($request, $karyawan, $jumlah_hari, $cutiQuota) {
             // Store the created cuti in a variable
             $cuti = Cuti::create([
-                'karyawan_id' => $karyawan->id,
+                'karyawan_id' => $karyawan->karyawan_id,
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'jumlah_hari' => $jumlah_hari,

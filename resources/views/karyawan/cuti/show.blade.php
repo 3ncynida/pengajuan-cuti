@@ -311,7 +311,7 @@
                         </a>
 
                         @if ($cuti->status === 'pending')
-                            <button type="button" class="btn btn-danger" onclick="deleteCuti({{ $cuti->id }})">
+                            <button type="button" class="btn btn-danger" onclick="deleteCuti({{ $cuti->cuti_id }})">
                                 <i class="bi bi-trash"></i> Hapus Pengajuan
                             </button>
                         @endif
@@ -324,9 +324,9 @@
 
 @push('scripts')
     <script>
-        function deleteCuti(id) {
+        function deleteCuti(cuti_id) {
             if (confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')) {
-                fetch(`/cuti/${id}`, {
+                fetch(`/cuti/${cuti_id}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',

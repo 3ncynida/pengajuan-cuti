@@ -8,6 +8,7 @@ use App\Models\Cuti;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -54,7 +55,7 @@ class AdminController extends Controller
             'nama_karyawan' => 'required|string|max:255',
             'email' => 'required|email|unique:karyawans,email',
             'jenis_kelamin' => 'required|in:L,P',
-            'jabatan_id' => 'required|exists:jabatans,id',
+            'jabatan_id' => 'required|exists:jabatans,jabatan_id',
             'role' => 'required|in:karyawan,admin'
         ]);
     
@@ -80,13 +81,13 @@ class AdminController extends Controller
     }
     public function updateKaryawan(Request $request, Karyawan $karyawan)
     {
-        if ($karyawan->id === auth()->id()) {
+        if ($karyawan->karyawan_id === auth()->id()) {
             return redirect()->back()->with('error', 'Tidak dapat mengubah akun sendiri.');
         }
     
         $request->validate([
             'role' => ['required', 'in:admin,karyawan'],
-            'jabatan_id' => ['required', 'exists:jabatans,id'],
+            'jabatan_id' => ['required', 'exists:jabatans,jabatan_id'],
             'jenis_kelamin' => ['required', 'in:L,P']
         ]);
     
@@ -116,14 +117,24 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Karyawan berhasil diupdate');
     }
 
-    public function deleteKaryawan(Karyawan $karyawan)
+    public function destroyKaryawan(Karyawan $karyawan)
     {
-        if ($karyawan->id === auth()->id()) {
+        if ($karyawan->karyawan_id === auth()->id()) {
             return response()->json(['error' => 'Tidak dapat menghapus akun sendiri.'], 403);
         }
-
-        $karyawan->delete();
-        return response()->json(['message' => 'Karyawan berhasil dihapus']);
+    
+        try {
+            DB::transaction(function() use ($karyawan) {
+                // Delete related records first
+                $karyawan->cutiQuota()->delete();
+                $karyawan->cutis()->delete();
+                $karyawan->delete();
+            });
+    
+            return response()->json(['success' => 'Karyawan berhasil dihapus'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghapus karyawan: ' . $e->getMessage()], 500);
+        }
     }
 
     public function jabatanIndex()
@@ -149,21 +160,50 @@ class AdminController extends Controller
     public function jabatanUpdate(Request $request, Jabatan $jabatan)
     {
         $request->validate([
-            'nama_jabatan' => 'required|string|max:255|unique:jabatans,nama_jabatan,' . $jabatan->id
+            'nama_jabatan' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('jabatans')->ignore($jabatan->jabatan_id, 'jabatan_id')
+            ]
         ], [
             'nama_jabatan.unique' => 'Jabatan sudah terdaftar'
         ]);
-
+    
         $jabatan->update($request->all());
-
+    
         return redirect()->route('admin.jabatan.index')
             ->with('success', 'Jabatan berhasil diupdate');
     }
 
     public function jabatanDestroy(Jabatan $jabatan)
     {
-        $jabatan->delete();
-        return response()->json(['message' => 'Jabatan berhasil dihapus']);
+        try {
+            // Debug: Log the jabatan ID and related karyawan
+            \Log::info('Attempting to delete jabatan: ' . $jabatan->jabatan_id);
+            \Log::info('Related karyawan count: ' . $jabatan->karyawans()->count());
+            
+            // Check if any karyawan uses this jabatan
+            if ($jabatan->karyawans()->exists()) {
+                $karyawanCount = $jabatan->karyawans()->count();
+                $karyawanNames = $jabatan->karyawans()->pluck('nama_karyawan')->join(', ');
+                
+                return response()->json([
+                    'message' => "Jabatan ini sedang digunakan oleh {$karyawanCount} karyawan: {$karyawanNames}"
+                ], 422);
+            }
+    
+            $jabatan->delete();
+            return response()->json([
+                'message' => 'Jabatan berhasil dihapus'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            \Log::error('Error deleting jabatan: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Gagal menghapus jabatan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show(Karyawan $karyawan)
@@ -266,7 +306,7 @@ class AdminController extends Controller
                     'startDate' => Carbon::parse($cuti->tanggal_mulai)->format('d/m/Y'),
                     'endDate' => Carbon::parse($cuti->tanggal_selesai)->format('d/m/Y'),
                     'status' => $statusLabel[$cuti->status],
-                    'detailUrl' => route('admin.cuti.show', $cuti->id) // Change url to detailUrl
+                    'detailUrl' => route('admin.cuti.show', $cuti->cuti_id) // Change url to detailUrl
                 ]
             ];
         });

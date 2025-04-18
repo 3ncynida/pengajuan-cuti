@@ -10,6 +10,8 @@ class Karyawan extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
+    protected $primaryKey = 'karyawan_id';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -17,13 +19,12 @@ class Karyawan extends Authenticatable
      */
     protected $fillable = [
         'nama_karyawan',
-        'jenis_kelamin',
         'email',
-        'nohp',
         'jabatan_id',
+        'jenis_kelamin',
         'role',
         'password',
-        'is_verified'
+        'nohp'
     ];
 
     /**
@@ -52,7 +53,7 @@ class Karyawan extends Authenticatable
      */
     public function jabatan()
     {
-        return $this->belongsTo(Jabatan::class);
+        return $this->belongsTo(Jabatan::class, 'jabatan_id');
     }
 
     /**
@@ -78,6 +79,6 @@ class Karyawan extends Authenticatable
 
 public function cutiQuota()
 {
-    return $this->hasOne(CutiQuota::class)->where('tahun', now()->year);
+    return $this->hasOne(CutiQuota::class, 'karyawan_id', 'karyawan_id')->where('tahun', now()->year);
 }
 }

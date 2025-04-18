@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Jabatan extends Model
 {
-    protected $fillable = [
-        'nama_jabatan',
-    ];
+    protected $primaryKey = 'jabatan_id';
+    protected $fillable = ['nama_jabatan'];
 
     public function karyawans()
     {
-        return $this->hasMany(Karyawan::class);
+        return $this->hasMany(Karyawan::class, 'jabatan_id', 'jabatan_id');
     }
 }

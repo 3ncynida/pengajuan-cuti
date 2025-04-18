@@ -13,7 +13,7 @@ class KaryawanMiddleware
         if (Auth::check() && Auth::user()->role === 'karyawan') {
             return $next($request);
         }
-
+        // Redirect to a different route if the user is not a karyawan
         return redirect()->route('access.denied');
     }
 }

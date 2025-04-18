@@ -324,8 +324,8 @@
                                             </span>
                                         </td>
                                         <td>
-                                            @if (auth()->id() !== $karyawan->id)
-                                                <a href="{{ route('admin.karyawan.show', $karyawan->id) }}"
+                                            @if (auth()->id() !== $karyawan->karyawan_id)
+                                                <a href="{{ route('admin.karyawan.show', $karyawan->karyawan_id) }}"
                                                     class="btn btn-sm btn-primary">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
@@ -391,8 +391,8 @@
                             id="jabatan_id" name="jabatan_id" required>
                             <option value="">Pilih Jabatan</option>
                             @foreach ($jabatans as $jabatan)
-                                <option value="{{ $jabatan->id }}" 
-                                    {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
+                                <option value="{{ $jabatan->jabatan_id }}" 
+                                    {{ old('jabatan_id') == $jabatan->jabatan_id ? 'selected' : '' }}>
                                     {{ $jabatan->nama_jabatan }}
                                 </option>
                             @endforeach

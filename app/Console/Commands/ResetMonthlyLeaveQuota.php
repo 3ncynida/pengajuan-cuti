@@ -25,17 +25,18 @@ class ResetMonthlyLeaveQuota extends Command
             
             foreach ($karyawans as $karyawan) {
                 // Reset cuti_haid quota
-                $cutiQuota = CutiQuota::where('karyawan_id', $karyawan->id)
-                    ->where('tahun', $currentYear)
-                    ->first();
-
-                if ($cutiQuota) {
-                    $cutiQuota->update(['cuti_haid' => 1]);
-                    $this->info("Reset monthly quota for {$karyawan->nama_karyawan} successful.");
-                }
+                CutiQuota::updateOrCreate(
+                    [
+                        'karyawan_id' => $karyawan->karyawan_id,
+                        'tahun' => $currentYear
+                    ],
+                    [
+                        'cuti_haid' => 1
+                    ]
+                );
             }
         });
 
-        $this->info('All monthly leave quotas have been reset successfully.');
+        $this->info('Monthly leave quotas have been reset successfully!');
     }
 }

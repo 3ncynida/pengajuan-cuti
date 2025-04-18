@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CutiQuota extends Model
 {
+    protected $primaryKey = 'kuotacuti_id';
+
     protected $fillable = [
         'karyawan_id',
         'cuti_tahunan',
@@ -22,6 +24,6 @@ class CutiQuota extends Model
 
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(Karyawan::class,  'karyawan_id', 'karyawan_id');
     }
 }

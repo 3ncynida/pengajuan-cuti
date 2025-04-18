@@ -13,14 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('karyawans', function (Blueprint $table) {
-            $table->id();
+            $table->id('karyawan_id');  // Mengubah primary key
             $table->string('nama_karyawan', 25)->nullable();
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('email', 25)->unique();
             $table->string('nohp', 20)->nullable()->unique();
-            $table->foreignId('jabatan_id')->nullable()->constrained('jabatans');
+            $table->foreignId('jabatan_id')->nullable()->constrained('jabatans', 'jabatan_id');
             $table->enum('role', ['admin', 'karyawan'])->default('karyawan');
-            $table->string('password')->nullable();;
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

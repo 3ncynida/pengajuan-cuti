@@ -49,31 +49,29 @@ Route::middleware(['auth', AdminMiddleware::class])
     ->name('admin.')
     ->group(function () {
         // Dashboard
-
+        // Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/admin/calendar', [AdminController::class, 'calendar'])->name('calendar');
 
         // Cuti Management
         Route::controller(AdminController::class)->prefix('cuti')->name('cuti.')->group(function () {
-            Route::get('/{cuti}', 'cutiShow')->name('show');
-            Route::post('/{cuti}/approve', 'cutiApprove')->name('approve');
-            Route::post('/{cuti}/reject', 'cutiReject')->name('reject');
+            Route::get('/{cuti:cuti_id}', 'cutiShow')->name('show');
+            Route::post('/{cuti:cuti_id}/approve', 'cutiApprove')->name('approve');
+            Route::post('/{cuti:cuti_id}/reject', 'cutiReject')->name('reject');
         });
 
         // Karyawan Management
-        Route::controller(AdminController::class)->group(function () {
-            Route::get('/karyawan', 'showAddEmailForm')->name('karyawan.index');
-            Route::post('/store-email', 'storeEmail')->name('store-email');
-            Route::get('/karyawan/{karyawan}', 'show')->name('karyawan.show');
-            Route::put('/karyawan/{karyawan}', 'updateKaryawan')->name('update-karyawan');
-            Route::delete('/karyawan/{karyawan}', 'deleteKaryawan')->name('delete-karyawan');
-        });
+    Route::get('/karyawan', [AdminController::class, 'showAddEmailForm'])->name('karyawan.index');
+    Route::get('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'show'])->name('karyawan.show');
+    Route::post('/karyawan', [AdminController::class, 'storeEmail'])->name('store-email');
+    Route::put('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'updateKaryawan'])->name('update-karyawan');
+    Route::delete('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'destroyKaryawan'])->name('karyawan.destroy');
 
         // Jabatan Management
-        Route::controller(AdminController::class)->prefix('jabatan')->name('jabatan.')->group(function () {
-            Route::get('/', 'jabatanIndex')->name('index');
-            Route::post('/', 'jabatanStore')->name('store');
-            Route::put('/{jabatan}', 'jabatanUpdate')->name('update');
-            Route::delete('/{jabatan}', 'jabatanDestroy')->name('destroy');
+        Route::prefix('jabatan')->name('jabatan.')->group(function () {
+            Route::get('/', [AdminController::class, 'jabatanIndex'])->name('index');
+            Route::post('/', [AdminController::class, 'jabatanStore'])->name('store');
+            Route::put('/{jabatan:jabatan_id}', [AdminController::class, 'jabatanUpdate'])->name('update');
+            Route::delete('/{jabatan:jabatan_id}', [AdminController::class, 'jabatanDestroy'])->name('destroy');
         });
     });
 
@@ -90,8 +88,8 @@ Route::middleware(['auth', KaryawanMiddleware::class])->group(function () {
     Route::controller(KaryawanController::class)->prefix('cuti')->name('cuti.')->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('/view/{cuti}', 'show')->name('show');
-        Route::delete('/{cuti}', 'destroy')->name('destroy'); // Move this inside the group
+        Route::get('/view/{cuti:cuti_id}', 'show')->name('show');
+        Route::delete('/{cuti:cuti_id}', 'destroy')->name('destroy'); // Move this inside the group
     });
 });
 

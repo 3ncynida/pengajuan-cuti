@@ -241,6 +241,7 @@
     </style>
 @endpush
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
     <main id="main" class="main">
         <section class="section">
             <div class="card">
@@ -273,14 +274,24 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $jabatan->nama_jabatan }}</td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                                data-bs-target="#editModal{{ $jabatan->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="deleteJabatan({{ $jabatan->id }})">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            @if(config('app.debug'))
+                                            <small class="text-muted">
+                                                ({{ $jabatan->karyawans()->count() }} karyawan)
+                                            </small>
+                                        @endif
+                                            
+                                                <button class="btn btn-sm btn-warning" 
+                                                        onclick="editJabatan('{{ $jabatan->jabatan_id }}', '{{ $jabatan->nama_jabatan }}')"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#editModal">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        onclick="deleteJabatan({{ $jabatan->jabatan_id }})">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            
                                         </td>
                                     </tr>
                                 @endforeach
@@ -323,35 +334,30 @@
 
     <!-- Edit Modals -->
     @foreach ($jabatans as $jabatan)
-        <div class="modal fade" id="editModal{{ $jabatan->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Jabatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="{{ route('admin.jabatan.update', $jabatan) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="nama_jabatan{{ $jabatan->id }}" class="form-label">Nama Jabatan</label>
-                                <input type="text" class="form-control @error('nama_jabatan') is-invalid @enderror"
-                                    id="nama_jabatan{{ $jabatan->id }}" name="nama_jabatan"
-                                    value="{{ old('nama_jabatan', $jabatan->nama_jabatan) }}" required>
-                                @error('nama_jabatan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Update</button>
-                        </div>
-                    </form>
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Jabatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <form id="editForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Jabatan</label>
+                            <input type="text" class="form-control" name="nama_jabatan" id="editNamaJabatan" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
     @endforeach
     <!-- Keep existing modals but add proper styling classes -->
 @endsection
@@ -406,26 +412,37 @@
             });
         });
 
-        function deleteJabatan(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus jabatan ini?')) {
-                fetch(`/admin/jabatan/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        alert('Terjadi kesalahan saat menghapus jabatan');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus jabatan');
-                });
+        function editJabatan(jabatan_id, nama_jabatan) {
+        const form = document.getElementById('editForm');
+        form.action = `/admin/jabatan/${jabatan_id}`;
+        document.getElementById('editNamaJabatan').value = nama_jabatan;
+    }
+
+    function deleteJabatan(jabatan_id) {
+    if (confirm('Apakah Anda yakin ingin menghapus jabatan ini?')) {
+        fetch(`/admin/jabatan/${jabatan_id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-        }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Tidak dapat menghapus jabatan yang sedang digunakan oleh karyawan');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    }
+}
 
         // Show create modal if there are validation errors
         @if ($errors->any())

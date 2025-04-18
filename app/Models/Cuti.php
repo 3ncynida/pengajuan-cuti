@@ -8,6 +8,8 @@ class Cuti extends Model
 {
     protected $table = 'cuti';
 
+    protected $primaryKey = 'cuti_id';
+
     protected $fillable = [
         'karyawan_id',
         'tanggal_mulai',
@@ -31,7 +33,7 @@ class Cuti extends Model
      */
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(Karyawan::class, 'karyawan_id', 'karyawan_id');
     }
 
     /**
