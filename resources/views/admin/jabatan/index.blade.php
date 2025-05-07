@@ -274,11 +274,11 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $jabatan->nama_jabatan }}</td>
                                         <td>
-                                            @if(config('app.debug'))
+                                            {{-- @if(config('app.debug'))
                                             <small class="text-muted">
                                                 ({{ $jabatan->karyawans()->count() }} karyawan)
                                             </small>
-                                        @endif
+                                        @endif --}}
                                             
                                                 <button class="btn btn-sm btn-warning" 
                                                         onclick="editJabatan('{{ $jabatan->jabatan_id }}', '{{ $jabatan->nama_jabatan }}')"

@@ -60,11 +60,11 @@ Route::middleware(['auth', AdminMiddleware::class])
         });
 
         // Karyawan Management
-    Route::get('/karyawan', [AdminController::class, 'showAddEmailForm'])->name('karyawan.index');
-    Route::get('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'show'])->name('karyawan.show');
-    Route::post('/karyawan', [AdminController::class, 'storeEmail'])->name('store-email');
-    Route::put('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'updateKaryawan'])->name('update-karyawan');
-    Route::delete('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'destroyKaryawan'])->name('karyawan.destroy');
+        Route::get('/karyawan', [AdminController::class, 'showAddEmailForm'])->name('karyawan.index');
+        Route::get('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'show'])->name('karyawan.show');
+        Route::post('/karyawan', [AdminController::class, 'storeEmail'])->name('store-email');
+        Route::put('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'updateKaryawan'])->name('update-karyawan');
+        Route::delete('/karyawan/{karyawan:karyawan_id}', [AdminController::class, 'destroyKaryawan'])->name('karyawan.destroy');
 
         // Jabatan Management
         Route::prefix('jabatan')->name('jabatan.')->group(function () {

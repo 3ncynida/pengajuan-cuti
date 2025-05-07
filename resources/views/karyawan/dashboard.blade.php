@@ -200,44 +200,44 @@
 
 @section('content')
 <main id="main" class="main">
-    <div class="container py-4">
-
-
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <i class='bi bi-calendar-check stat-icon text-primary'></i>
-                        <div>
-                            <h3>{{ $totalCuti }}</h3>
-                            <p>Total Pengajuan</p>
+        <div class="container py-4">
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <i class='bi bi-calendar-check stat-icon text-primary'></i>
+                            <div>
+                                <h3>{{ $totalCuti }}</h3>
+                                <p>Total Pengajuan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <i class='bi bi-calendar-check stat-icon text-primary'></i>
+                            <div>
+                                <h3 class="mb-0">{{ $cutiQuota->sisa_jatah_masuk }}</h3>
+                                <p class="text-muted mb-0">Sisa Hari Kerja</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <i class='bi bi-check-circle stat-icon text-success'></i>
+                            <div>
+                                <h3 class="mb-0">{{ $approvedCuti }}</h3>
+                                <p class="text-muted mb-0">Approved</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <i class='bi bi-hourglass-split stat-icon text-warning'></i>
-                        <div>
-                            <h3 class="mb-0">{{ $pendingCuti }}</h3>
-                            <p class="text-muted mb-0">Pending</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center">
-                        <i class='bi bi-check-circle stat-icon text-success'></i>
-                        <div>
-                            <h3 class="mb-0">{{ $approvedCuti }}</h3>
-                            <p class="text-muted mb-0">Approved</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="history-card">
             <h4>Riwayat Pengajuan Cuti</h4>

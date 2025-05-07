@@ -6,29 +6,33 @@ use App\Models\Cuti;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class KaryawanController extends Controller
 {
     public function dashboard()
     {
         $karyawan = auth()->user();
-        $totalCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)->count();
-        $approvedCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
-            ->where('status', 'approved')
-            ->count();
-        $pendingCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
-            ->where('status', 'pending')
-            ->count();
-        $recentCuti = Cuti::where('karyawan_id', $karyawan->karyawan_id)
-            ->latest()
-            ->get();
+    $cutiQuota = $karyawan->cutiQuota()->where('tahun', now()->year)->first();
 
-        return view('karyawan.dashboard', compact(
-            'totalCuti',
-            'approvedCuti',
-            'pendingCuti',
-            'recentCuti'
-        ));
+    if (!$cutiQuota) {
+        return view('karyawan.dashboard', [
+            'totalCuti' => 0,
+            'jatahMasuk' => 0,
+            'sisaJatahMasuk' => 0,
+            'approvedCuti' => 0,
+            'recentCuti' => collect([])
+        ])->with('error', 'Kuota cuti belum diatur untuk tahun ini.');
+    }
+
+    return view('karyawan.dashboard', [
+        'totalCuti' => $karyawan->cutis()->count(),
+        'jatahMasuk' => $cutiQuota->jatah_masuk,
+        'sisaJatahMasuk' => $cutiQuota->sisa_jatah_masuk,
+        'approvedCuti' => $karyawan->cutis()->where('status', 'approved')->count(),
+        'recentCuti' => $karyawan->cutis()->orderBy('created_at', 'desc')->take(5)->get(),
+        'cutiQuota' => $cutiQuota
+    ]);
     }
 
     public function calendar()
@@ -85,20 +89,56 @@ class KaryawanController extends Controller
     {
         $karyawan = auth()->user();
         $cutiQuota = $karyawan->cutiQuota;
-
+// dd($cutiQuota);
         return view('karyawan.cuti.create', compact('cutiQuota'));
     }
 
     public function store(Request $request)
     {
-        // Validate request
-        $validated = $request->validate([
-            'tanggal_mulai' => 'required|date|after_or_equal:today',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'jenis_cuti' => 'required|in:tahunan,khusus,haid,melahirkan,ayah',
-            'alasan' => 'required|string',
-            'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
-        ]);
+            // Add custom validation rule for weekday
+            $request->validate([
+                'tanggal_mulai' => [
+                    'required',
+                    'date',
+                    'after_or_equal:today',
+                    function ($attribute, $value, $fail) {
+                        $startDate = Carbon::parse($value);
+                        if ($startDate->isWeekend()) {
+                            $fail('Tanggal mulai harus hari kerja (Senin-Jumat).');
+                        }
+                    },
+                ],
+                'tanggal_selesai' => [
+                    'required',
+                    'date',
+                    'after_or_equal:tanggal_mulai',
+                    function ($attribute, $value, $fail) {
+                        $endDate = Carbon::parse($value);
+                        if ($endDate->isWeekend()) {
+                            $fail('Tanggal selesai harus hari kerja (Senin-Jumat).');
+                        }
+                    },
+                ],
+                'jenis_cuti' => 'required|in:tahunan,khusus,haid,melahirkan,ayah',
+                'alasan' => 'required|string',
+                'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
+            ], [
+                'tanggal_mulai.after_or_equal' => 'Tanggal mulai harus hari ini atau setelahnya.',
+                'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah tanggal mulai.'
+            ]);
+        
+            // Check for weekend days between start and end dates
+            $startDate = Carbon::parse($request->tanggal_mulai);
+            $endDate = Carbon::parse($request->tanggal_selesai);
+            $period = CarbonPeriod::create($startDate, $endDate);
+        
+            foreach ($period as $date) {
+                if ($date->isWeekend()) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'Rentang tanggal cuti tidak boleh termasuk hari Sabtu dan Minggu.');
+                }
+            }
 
         $karyawan = auth()->user();
         $cutiQuota = $karyawan->cutiQuota;
@@ -136,9 +176,10 @@ class KaryawanController extends Controller
             }
         }
 
-        // Calculate number of days
-        $jumlah_hari = Carbon::parse($request->tanggal_mulai)
-            ->diffInDays(Carbon::parse($request->tanggal_selesai)) + 1;
+           // Recalculate number of days excluding weekends
+    $jumlah_hari = $startDate->diffInDaysFiltered(function (Carbon $date) {
+        return !$date->isWeekend();
+    }, $endDate) + 1;
 
         $quotaField = 'cuti_' . $request->jenis_cuti;
 

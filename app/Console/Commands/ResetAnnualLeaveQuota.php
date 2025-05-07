@@ -7,6 +7,7 @@ use App\Models\CutiQuota;
 use App\Models\Karyawan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\LeaveCalculator;
 
 class ResetAnnualLeaveQuota extends Command
 {
@@ -22,14 +23,17 @@ class ResetAnnualLeaveQuota extends Command
             
             $karyawans = Karyawan::all();
             
+
             foreach ($karyawans as $karyawan) {
+                $proratedLeave = LeaveCalculator::calculateProratedLeave($karyawan->tanggal_bergabung);
+                
                 CutiQuota::updateOrCreate(
                     [
                         'karyawan_id' => $karyawan->karyawan_id,
                         'tahun' => $currentYear
                     ],
                     [
-                        'cuti_tahunan' => 12,
+                        'cuti_tahunan' => $proratedLeave,
                         'cuti_khusus' => 3,
                         'cuti_haid' => $karyawan->jenis_kelamin === 'P' ? 1 : 0,
                         'cuti_melahirkan' => $karyawan->jenis_kelamin === 'P' ? 90 : 0,
